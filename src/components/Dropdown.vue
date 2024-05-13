@@ -20,44 +20,20 @@
           <div v-if="isLoading" class="p-2 text-gray-600 italic">
             {{ t`Loading...` }}
           </div>
-          <div
-            v-else-if="dropdownItems.length === 0"
-            class="p-2 text-gray-600 italic"
-          >
+          <div v-else-if="dropdownItems.length === 0" class="p-2 text-gray-600 italic">
             {{ getEmptyMessage() }}
           </div>
           <template v-else>
-            <div
-              v-for="(d, index) in dropdownItems"
-              :key="`key-${index}`"
-              ref="items"
-            >
+            <div v-for="(d, index) in dropdownItems" :key="`key-${index}`" ref="items">
               <div
                 v-if="d.isGroup"
-                class="
-                  px-2
-                  pt-3
-                  pb-1
-                  text-xs
-                  uppercase
-                  text-gray-700
-                  font-semibold
-                  tracking-wider
-                "
+                class="px-2 pt-3 pb-1 text-xs uppercase text-gray-700 font-semibold tracking-wider"
               >
                 {{ d.label }}
               </div>
               <a
                 v-else
-                class="
-                  block
-                  p-2
-                  rounded-md
-                  mt-1
-                  first:mt-0
-                  cursor-pointer
-                  truncate
-                "
+                class="block p-2 rounded-md mt-1 first:mt-0 cursor-pointer truncate"
                 :class="index === highlightedIndex ? 'bg-gray-100' : ''"
                 @mouseenter="highlightedIndex = index"
                 @mousedown.prevent
@@ -74,15 +50,15 @@
   </Popover>
 </template>
 <script lang="ts">
-import { Doc } from 'fyo/model/doc';
-import { Field } from 'schemas/types';
-import { fyo } from 'src/initFyo';
-import { DropdownItem } from 'src/utils/types';
-import { defineComponent, PropType } from 'vue';
-import Popover from './Popover.vue';
+import { Doc } from "fyo/model/doc";
+import { Field } from "schemas/types";
+import { fyo } from "src/initFyo";
+import { DropdownItem } from "src/utils/types";
+import { defineComponent, PropType } from "vue";
+import Popover from "./Popover.vue";
 
 export default defineComponent({
-  name: 'Dropdown',
+  name: "Dropdown",
   components: {
     Popover,
   },
@@ -119,7 +95,7 @@ export default defineComponent({
       const groupedItems = getGroupedItems(this.items ?? []);
       const groupNames = Object.keys(groupedItems).filter(Boolean).sort();
 
-      const items: DropdownItem[] = groupedItems[''] ?? [];
+      const items: DropdownItem[] = groupedItems[""] ?? [];
       for (let group of groupNames) {
         items.push({
           label: group,
@@ -149,9 +125,7 @@ export default defineComponent({
         return this.t`Empty`;
       }
 
-      const emptyMessage = fyo.models[schemaName]?.emptyMessages[fieldname]?.(
-        this.doc
-      );
+      const emptyMessage = fyo.models[schemaName]?.emptyMessages[fieldname]?.(this.doc);
 
       if (!emptyMessage) {
         return this.t`Empty`;
@@ -171,7 +145,7 @@ export default defineComponent({
       await d.action();
     },
     toggleDropdown(flag?: boolean): void {
-      if (typeof flag !== 'boolean') {
+      if (typeof flag !== "boolean") {
         flag = !this.isShown;
       }
 
@@ -209,17 +183,15 @@ export default defineComponent({
         return;
       }
 
-      highlightedElement.scrollIntoView({ block: 'nearest' });
+      highlightedElement.scrollIntoView({ block: "nearest" });
     },
   },
 });
 
-function getGroupedItems(
-  items: DropdownItem[]
-): Record<string, DropdownItem[]> {
+function getGroupedItems(items: DropdownItem[]): Record<string, DropdownItem[]> {
   const groupedItems: Record<string, DropdownItem[]> = {};
   for (let item of items) {
-    const group = item.group ?? '';
+    const group = item.group ?? "";
 
     groupedItems[group] ??= [];
     groupedItems[group].push(item);

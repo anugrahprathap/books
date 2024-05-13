@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { showSidebar } from 'src/utils/refs';
-import { toggleSidebar } from 'src/utils/ui';
+import { showSidebar } from "src/utils/refs";
+import { toggleSidebar } from "src/utils/ui";
 </script>
 <template>
   <div class="flex overflow-hidden">
@@ -23,10 +23,7 @@ import { toggleSidebar } from 'src/utils/ui';
       <router-view v-slot="{ Component, route }" name="edit">
         <Transition name="quickedit">
           <div v-if="route?.query?.edit">
-            <component
-              :is="Component"
-              :key="route.query.schemaName + route.query.name"
-            />
+            <component :is="Component" :key="route.query.schemaName + route.query.name" />
           </div>
         </Transition>
       </router-view>
@@ -35,19 +32,7 @@ import { toggleSidebar } from 'src/utils/ui';
     <!-- Show Sidebar Button -->
     <button
       v-show="!showSidebar"
-      class="
-        absolute
-        bottom-0
-        start-0
-        text-gray-600
-        bg-gray-100
-        rounded
-        rtl-rotate-180
-        p-1
-        m-4
-        opacity-0
-        hover:opacity-100 hover:shadow-md
-      "
+      class="absolute bottom-0 start-0 text-gray-600 bg-gray-100 rounded rtl-rotate-180 p-1 m-4 opacity-0 hover:opacity-100 hover:shadow-md"
       @click="() => toggleSidebar()"
     >
       <feather-icon name="chevrons-right" class="w-4 h-4" />
@@ -55,14 +40,14 @@ import { toggleSidebar } from 'src/utils/ui';
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
-import Sidebar from '../components/Sidebar.vue';
+import { defineComponent } from "vue";
+import Sidebar from "../components/Sidebar.vue";
 export default defineComponent({
-  name: 'Desk',
+  name: "Desk",
   components: {
     Sidebar,
   },
-  emits: ['change-db-file'],
+  emits: ["change-db-file"],
 });
 </script>
 
@@ -73,7 +58,7 @@ export default defineComponent({
   transform: translateX(calc(-1 * var(--w-sidebar)));
   width: 0px;
 }
-[dir='rtl'] .sidebar-leave-to {
+[dir="rtl"] .sidebar-leave-to {
   opacity: 0;
   transform: translateX(calc(1 * var(--w-sidebar)));
   width: 0px;

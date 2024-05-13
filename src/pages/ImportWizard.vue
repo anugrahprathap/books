@@ -1,5 +1,6 @@
 <template>
   <div class="flex flex-col overflow-hidden w-full">
+
     <!-- Header -->
     <PageHeader :title="t`Import Wizard`">
       <DropdownWithActions
@@ -48,16 +49,7 @@
     <div class="flex text-base w-full flex-col">
       <!-- Select Import Type -->
       <div
-        class="
-          h-row-largest
-          flex flex-row
-          justify-start
-          items-center
-          w-full
-          gap-2
-          border-b
-          p-4
-        "
+        class="h-row-largest flex flex-row justify-start items-center w-full gap-2 border-b p-4"
       >
         <AutoComplete
           :df="{
@@ -86,15 +78,15 @@
           :class="fileName ? 'text-gray-900 font-semibold' : 'text-gray-700'"
         >
           <span v-if="fileName" class="font-normal">{{ t`Selected` }} </span>
-          {{ helperMessage }}{{ fileName ? ',' : '' }}
+          {{ helperMessage }}{{ fileName ? "," : "" }}
           <span v-if="fileName" class="font-normal">
             {{ t`check values and click on` }} </span
-          >{{ ' ' }}<span v-if="fileName">{{ t`Import Data.` }}</span>
+          >{{ " " }}<span v-if="fileName">{{ t`Import Data.` }}</span>
           <span
             v-if="hasImporter && importer.valueMatrix.length > 0"
             class="font-normal"
             >{{
-              ' ' +
+              " " +
               (importer.valueMatrix.length === 2
                 ? t`${importer.valueMatrix.length} row added.`
                 : t`${importer.valueMatrix.length} rows added.`)
@@ -220,10 +212,7 @@
     />
 
     <!-- Pick Column Modal -->
-    <Modal
-      :open-modal="showColumnPicker"
-      @closemodal="showColumnPicker = false"
-    >
+    <Modal :open-modal="showColumnPicker" @closemodal="showColumnPicker = false">
       <div class="w-form">
         <!-- Pick Column Header -->
         <FormHeader :form-title="t`Pick Import Columns`" />
@@ -239,11 +228,7 @@
             {{ key }}
           </h2>
           <div class="grid grid-cols-3 border rounded mt-1">
-            <div
-              v-for="tf of value"
-              :key="tf.fieldKey"
-              class="flex items-center"
-            >
+            <div v-for="tf of value" :key="tf.fieldKey" class="flex items-center">
               <Check
                 :df="{
                   fieldtype: 'Check',
@@ -266,9 +251,7 @@
           <p class="text-sm text-gray-600">
             {{ t`${numColumnsPicked} fields selected` }}
           </p>
-          <Button type="primary" @click="showColumnPicker = false">{{
-            t`Done`
-          }}</Button>
+          <Button type="primary" @click="showColumnPicker = false">{{ t`Done` }}</Button>
         </div>
       </div>
     </Modal>
@@ -343,25 +326,18 @@
         </div>
 
         <!-- Fallback Div -->
-        <div
-          v-if="failed.length === 0 && success.length === 0"
-          class="p-4 text-base"
-        >
+        <div v-if="failed.length === 0 && success.length === 0" class="p-4 text-base">
           {{ t`No entries were imported.` }}
         </div>
 
         <!-- Footer Button -->
         <div class="flex justify-between p-4">
-          <Button
-            v-if="failed.length > 0"
-            @click="clearSuccessfullyImportedEntries"
-            >{{ t`Fix Failed` }}</Button
-          >
-          <Button
-            v-if="failed.length === 0 && success.length > 0"
-            @click="showMe"
-            >{{ t`Show Me` }}</Button
-          >
+          <Button v-if="failed.length > 0" @click="clearSuccessfullyImportedEntries">{{
+            t`Fix Failed`
+          }}</Button>
+          <Button v-if="failed.length === 0 && success.length > 0" @click="showMe">{{
+            t`Show Me`
+          }}</Button>
           <Button @click="clear">{{ t`Done` }}</Button>
         </div>
       </div>
@@ -369,30 +345,31 @@
   </div>
 </template>
 <script lang="ts">
-import { DocValue } from 'fyo/core/types';
-import { Action } from 'fyo/model/types';
-import { Verb } from 'fyo/telemetry/types';
-import { ValidationError } from 'fyo/utils/errors';
-import { ModelNameEnum } from 'models/types';
-import { OptionField, RawValue, SelectOption } from 'schemas/types';
-import Button from 'src/components/Button.vue';
-import AutoComplete from 'src/components/Controls/AutoComplete.vue';
-import Check from 'src/components/Controls/Check.vue';
-import Data from 'src/components/Controls/Data.vue';
-import FormControl from 'src/components/Controls/FormControl.vue';
-import Select from 'src/components/Controls/Select.vue';
-import DropdownWithActions from 'src/components/DropdownWithActions.vue';
-import FormHeader from 'src/components/FormHeader.vue';
-import Modal from 'src/components/Modal.vue';
-import PageHeader from 'src/components/PageHeader.vue';
-import { Importer, TemplateField, getColumnLabel } from 'src/importer';
-import { fyo } from 'src/initFyo';
-import { showDialog } from 'src/utils/interactive';
-import { docsPathMap } from 'src/utils/misc';
-import { docsPathRef } from 'src/utils/refs';
-import { getSavePath, selectTextFile } from 'src/utils/ui';
-import { defineComponent } from 'vue';
-import Loading from '../components/Loading.vue';
+import { DocValue } from "fyo/core/types";
+import { Action } from "fyo/model/types";
+import { Verb } from "fyo/telemetry/types";
+import { ValidationError } from "fyo/utils/errors";
+import { ModelNameEnum } from "models/types";
+import { OptionField, RawValue, SelectOption } from "schemas/types";
+import Button from "src/components/Button.vue";
+import AutoComplete from "src/components/Controls/AutoComplete.vue";
+import Check from "src/components/Controls/Check.vue";
+import Data from "src/components/Controls/Data.vue";
+import FormControl from "src/components/Controls/FormControl.vue";
+import Select from "src/components/Controls/Select.vue";
+import DropdownWithActions from "src/components/DropdownWithActions.vue";
+import FormHeader from "src/components/FormHeader.vue";
+import Modal from "src/components/Modal.vue";
+import PageHeader from "src/components/PageHeader.vue";
+import { Importer, TemplateField, getColumnLabel } from "src/importer";
+import { fyo } from "src/initFyo";
+import { showDialog } from "src/utils/interactive";
+import { docsPathMap } from "src/utils/misc";
+import { docsPathRef } from "src/utils/refs";
+import { getSavePath, selectTextFile } from "src/utils/ui";
+import { defineComponent } from "vue";
+import Loading from "../components/Loading.vue";
+
 
 type ImportWizardData = {
   showColumnPicker: boolean;
@@ -431,10 +408,10 @@ export default defineComponent({
       failed: [],
       file: null,
       nullOrImporter: null,
-      importType: '',
+      importType: "",
       isMakingEntries: false,
       percentLoading: 0,
-      messageLoading: '',
+      messageLoading: "",
     } as ImportWizardData;
   },
   computed: {
@@ -486,17 +463,16 @@ export default defineComponent({
     },
     errorMessage(): string {
       if (this.duplicates.length) {
-        return this.t`Duplicate columns found: ${this.duplicates.join(', ')}`;
+        return this.t`Duplicate columns found: ${this.duplicates.join(", ")}`;
       }
 
       if (this.requiredNotSelected.length) {
-        return this
-          .t`Required fields not selected: ${this.requiredNotSelected.join(
-          ', '
+        return this.t`Required fields not selected: ${this.requiredNotSelected.join(
+          ", "
         )}`;
       }
 
-      return '';
+      return "";
     },
     canImportData(): boolean {
       if (!this.hasImporter) {
@@ -535,8 +511,7 @@ export default defineComponent({
       return !!this.nullOrImporter;
     },
     numColumnsPicked(): number {
-      return [...this.importer.templateFieldsPicked.values()].filter(Boolean)
-        .length;
+      return [...this.importer.templateFieldsPicked.values()].filter(Boolean).length;
     },
     columnPickerFieldsMap(): Map<string, TemplateField[]> {
       const map: Map<string, TemplateField[]> = new Map();
@@ -610,7 +585,7 @@ export default defineComponent({
       const pickColumnsAction = {
         label: this.t`Pick Import Columns`,
         component: {
-          template: '<span>{{ t`Pick Import Columns` }}</span>',
+          template: "<span>{{ t`Pick Import Columns` }}</span>",
         },
         action: () => (this.showColumnPicker = true),
       };
@@ -628,7 +603,7 @@ export default defineComponent({
     },
     fileName(): string {
       if (!this.file) {
-        return '';
+        return "";
       }
 
       return this.file.name;
@@ -637,7 +612,7 @@ export default defineComponent({
       if (!this.importType) {
         return this.t`Set an Import Type`;
       } else if (!this.fileName) {
-        return '';
+        return "";
       }
 
       return this.fileName;
@@ -659,10 +634,10 @@ export default defineComponent({
         options.push({ value, label });
       }
 
-      options.push({ value: '', label: this.t`None` });
+      options.push({ value: "", label: this.t`None` });
       return {
-        fieldname: 'col',
-        fieldtype: 'Select',
+        fieldname: "col",
+        fieldtype: "Select",
         options,
       } as OptionField;
     },
@@ -695,10 +670,10 @@ export default defineComponent({
     }
   },
   activated(): void {
-    docsPathRef.value = docsPathMap.ImportWizard ?? '';
+    docsPathRef.value = docsPathMap.ImportWizard ?? "";
   },
   deactivated(): void {
-    docsPathRef.value = '';
+    docsPathRef.value = "";
     if (!this.complete) {
       return;
     }
@@ -728,7 +703,7 @@ export default defineComponent({
         return this.t`No Value`;
       }
 
-      return title.join(', ');
+      return title.join(", ");
     },
     pickColumn(fieldKey: string, value: boolean): void {
       this.importer.templateFieldsPicked.set(fieldKey, value);
@@ -736,9 +711,7 @@ export default defineComponent({
         return;
       }
 
-      const idx = this.importer.assignedTemplateFields.findIndex(
-        (f) => f === fieldKey
-      );
+      const idx = this.importer.assignedTemplateFields.findIndex((f) => f === fieldKey);
 
       if (idx >= 0) {
         this.importer.assignedTemplateFields[idx] = null;
@@ -750,11 +723,7 @@ export default defineComponent({
         return;
       }
 
-      for (
-        let idx = 0;
-        idx < this.importer.assignedTemplateFields.length;
-        idx++
-      ) {
+      for (let idx = 0; idx < this.importer.assignedTemplateFields.length; idx++) {
         this.importer.assignedTemplateFields[idx] = null;
       }
 
@@ -779,16 +748,16 @@ export default defineComponent({
       this.successOldName = [];
       this.failed = [];
       this.nullOrImporter = null;
-      this.importType = '';
+      this.importType = "";
       this.complete = false;
       this.isMakingEntries = false;
       this.percentLoading = 0;
-      this.messageLoading = '';
+      this.messageLoading = "";
     },
     async saveTemplate(): Promise<void> {
       const template = this.importer.getCSVTemplate();
-      const templateName = this.importType + ' ' + this.t`Template`;
-      const { canceled, filePath } = await getSavePath(templateName, 'csv');
+      const templateName = this.importType + " " + this.t`Template`;
+      const { canceled, filePath } = await getSavePath(templateName, "csv");
 
       if (canceled || !filePath) {
         return;
@@ -801,7 +770,7 @@ export default defineComponent({
       if (this.errorMessage.length) {
         await showDialog({
           title,
-          type: 'error',
+          type: "error",
           detail: this.errorMessage,
         });
         return false;
@@ -811,10 +780,8 @@ export default defineComponent({
       if (cellErrors.length) {
         await showDialog({
           title,
-          type: 'error',
-          detail: this.t`Following cells have errors: ${cellErrors.join(
-            ', '
-          )}.`,
+          type: "error",
+          detail: this.t`Following cells have errors: ${cellErrors.join(", ")}.`,
         });
         return false;
       }
@@ -823,10 +790,10 @@ export default defineComponent({
       if (absentLinks.length) {
         await showDialog({
           title,
-          type: 'error',
+          type: "error",
           detail: this.t`Following links do not exist: ${absentLinks
             .map((l) => `(${l.schemaLabel ?? l.schemaName}, ${l.name})`)
-            .join(', ')}.`,
+            .join(", ")}.`,
         });
         return false;
       }
@@ -847,7 +814,7 @@ export default defineComponent({
       let doneCount = 0;
       for (const doc of this.importer.docs) {
         this.setLoadingStatus(doneCount, this.importer.docs.length);
-        const oldName = doc.name ?? '';
+        const oldName = doc.name ?? "";
         try {
           await doc.sync();
           if (shouldSubmit) {
@@ -876,7 +843,7 @@ export default defineComponent({
       let shouldSubmit = false;
       await showDialog({
         title: this.t`Submit entries?`,
-        type: 'info',
+        type: "info",
         details: this.t`Should entries be submitted after syncing?`,
         buttons: [
           {
@@ -905,16 +872,14 @@ export default defineComponent({
         (n) => n === nameFieldKey
       );
 
-      const failedEntriesValueMatrix = this.importer.valueMatrix.filter(
-        (row) => {
-          const value = row[nameIndex].value;
-          if (typeof value !== 'string') {
-            return false;
-          }
-
-          return !this.successOldName.includes(value);
+      const failedEntriesValueMatrix = this.importer.valueMatrix.filter((row) => {
+        const value = row[nameIndex].value;
+        if (typeof value !== "string") {
+          return false;
         }
-      );
+
+        return !this.successOldName.includes(value);
+      });
 
       this.setImportType(this.importType);
       this.importer.valueMatrix = failedEntriesValueMatrix;
@@ -932,11 +897,11 @@ export default defineComponent({
       this.percentLoading = entriesMade / totalEntries;
       this.messageLoading = this.isMakingEntries
         ? `${entriesMade} entries made out of ${totalEntries}...`
-        : '';
+        : "";
     },
     async selectFile(): Promise<void> {
       const { text, name, filePath } = await selectTextFile([
-        { name: 'CSV', extensions: ['csv'] },
+        { name: "CSV", extensions: ["csv"] },
       ]);
 
       if (!text) {
@@ -948,7 +913,7 @@ export default defineComponent({
         await showDialog({
           title: this.t`Cannot read file`,
           detail: this.t`Bad import data, could not read file.`,
-          type: 'error',
+          type: "error",
         });
         return;
       }

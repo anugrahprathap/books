@@ -10,6 +10,8 @@
       :db-path="dbPath"
       :company-name="companyName"
     />
+
+    <NavBar @change-db-file="showDbSelector"></NavBar>
     <!-- Main Contents -->
     <Desk
       v-if="activeScreen === 'Desk'"
@@ -37,40 +39,42 @@
   </div>
 </template>
 <script lang="ts">
-import { RTL_LANGUAGES } from 'fyo/utils/consts';
-import { ModelNameEnum } from 'models/types';
-import { systemLanguageRef } from 'src/utils/refs';
-import { defineComponent, provide, ref, Ref } from 'vue';
-import WindowsTitleBar from './components/WindowsTitleBar.vue';
-import { handleErrorWithDialog } from './errorHandling';
-import { fyo } from './initFyo';
-import DatabaseSelector from './pages/DatabaseSelector.vue';
-import Desk from './pages/Desk.vue';
-import SetupWizard from './pages/SetupWizard/SetupWizard.vue';
-import setupInstance from './setup/setupInstance';
-import { SetupWizardOptions } from './setup/types';
-import './styles/index.css';
-import { connectToDatabase, dbErrorActionSymbols } from './utils/db';
-import { initializeInstance } from './utils/initialization';
-import * as injectionKeys from './utils/injectionKeys';
-import { showDialog } from './utils/interactive';
-import { setLanguageMap } from './utils/language';
-import { updateConfigFiles } from './utils/misc';
-import { updatePrintTemplates } from './utils/printTemplates';
-import { Search } from './utils/search';
-import { Shortcuts } from './utils/shortcuts';
-import { routeTo } from './utils/ui';
-import { useKeys } from './utils/vueUtils';
+import { RTL_LANGUAGES } from "fyo/utils/consts";
+import { ModelNameEnum } from "models/types";
+import { systemLanguageRef } from "src/utils/refs";
+import { defineComponent, provide, ref, Ref } from "vue";
+import WindowsTitleBar from "./components/WindowsTitleBar.vue";
+import { handleErrorWithDialog } from "./errorHandling";
+import { fyo } from "./initFyo";
+import DatabaseSelector from "./pages/DatabaseSelector.vue";
+import Desk from "./pages/Desk.vue";
+import SetupWizard from "./pages/SetupWizard/SetupWizard.vue";
+import setupInstance from "./setup/setupInstance";
+import { SetupWizardOptions } from "./setup/types";
+import "./styles/index.css";
+import { connectToDatabase, dbErrorActionSymbols } from "./utils/db";
+import { initializeInstance } from "./utils/initialization";
+import * as injectionKeys from "./utils/injectionKeys";
+import { showDialog } from "./utils/interactive";
+import { setLanguageMap } from "./utils/language";
+import { updateConfigFiles } from "./utils/misc";
+import { updatePrintTemplates } from "./utils/printTemplates";
+import { Search } from "./utils/search";
+import { Shortcuts } from "./utils/shortcuts";
+import { routeTo } from "./utils/ui";
+import { useKeys } from "./utils/vueUtils";
+import NavBar from "./components/NavBar.vue";
 
 enum Screen {
-  Desk = 'Desk',
-  DatabaseSelector = 'DatabaseSelector',
-  SetupWizard = 'SetupWizard',
+  Desk = "Desk",
+  DatabaseSelector = "DatabaseSelector",
+  SetupWizard = "SetupWizard",
 }
 
 export default defineComponent({
-  name: 'App',
+  name: "App",
   components: {
+    NavBar,
     Desk,
     SetupWizard,
     DatabaseSelector,
@@ -80,18 +84,14 @@ export default defineComponent({
     const keys = useKeys();
     const searcher: Ref<null | Search> = ref(null);
     const shortcuts = new Shortcuts(keys);
-    const languageDirection = ref(
-      getLanguageDirection(systemLanguageRef.value)
-    );
+    const languageDirection = ref(getLanguageDirection(systemLanguageRef.value));
 
     provide(injectionKeys.keysKey, keys);
     provide(injectionKeys.searcherKey, searcher);
     provide(injectionKeys.shortcutsKey, shortcuts);
     provide(injectionKeys.languageDirectionKey, languageDirection);
 
-    const databaseSelector = ref<InstanceType<typeof DatabaseSelector> | null>(
-      null
-    );
+    const databaseSelector = ref<InstanceType<typeof DatabaseSelector> | null>(null);
 
     return {
       keys,
@@ -104,8 +104,8 @@ export default defineComponent({
   data() {
     return {
       activeScreen: null,
-      dbPath: '',
-      companyName: '',
+      dbPath: "",
+      companyName: "",
     } as {
       activeScreen: null | Screen;
       dbPath: string;
@@ -127,12 +127,9 @@ export default defineComponent({
   },
   methods: {
     async setInitialScreen(): Promise<void> {
-      const lastSelectedFilePath = fyo.config.get('lastSelectedFilePath', null);
+      const lastSelectedFilePath = fyo.config.get("lastSelectedFilePath", null);
 
-      if (
-        typeof lastSelectedFilePath !== 'string' ||
-        !lastSelectedFilePath.length
-      ) {
+      if (typeof lastSelectedFilePath !== "string" || !lastSelectedFilePath.length) {
         this.activeScreen = Screen.DatabaseSelector;
         return;
       }
@@ -152,7 +149,7 @@ export default defineComponent({
       this.dbPath = filePath;
       this.companyName = (await fyo.getValue(
         ModelNameEnum.AccountingSettings,
-        'companyName'
+        "companyName"
       )) as string;
       await this.setSearcher();
       updateConfigFiles(fyo);
@@ -161,16 +158,16 @@ export default defineComponent({
       this.activeScreen = Screen.SetupWizard;
     },
     async fileSelected(filePath: string): Promise<void> {
-      fyo.config.set('lastSelectedFilePath', filePath);
-      if (filePath !== ':memory:' && !(await ipc.checkDbAccess(filePath))) {
+      fyo.config.set("lastSelectedFilePath", filePath);
+      if (filePath !== ":memory:" && !(await ipc.checkDbAccess(filePath))) {
         await showDialog({
           title: this.t`Cannot open file`,
-          type: 'error',
+          type: "error",
           detail: this
             .t`Frappe Books does not have access to the selected file: ${filePath}`,
         });
 
-        fyo.config.set('lastSelectedFilePath', null);
+        fyo.config.set("lastSelectedFilePath", null);
         return;
       }
 
@@ -185,7 +182,7 @@ export default defineComponent({
       const companyName = setupWizardOptions.companyName;
       const filePath = await ipc.getDbDefaultPath(companyName);
       await setupInstance(filePath, setupWizardOptions, fyo);
-      fyo.config.set('lastSelectedFilePath', filePath);
+      fyo.config.set("lastSelectedFilePath", filePath);
       await this.setDesk(filePath);
     },
     async showSetupWizardOrDesk(filePath: string): Promise<void> {
@@ -200,7 +197,7 @@ export default defineComponent({
 
       const setupComplete = await fyo.getValue(
         ModelNameEnum.AccountingSettings,
-        'setupComplete'
+        "setupComplete"
       );
 
       if (!setupComplete) {
@@ -227,30 +224,30 @@ export default defineComponent({
       throw error;
     },
     async setDeskRoute(): Promise<void> {
-      const { onboardingComplete } = await fyo.doc.getDoc('GetStarted');
-      const { hideGetStarted } = await fyo.doc.getDoc('SystemSettings');
+      const { onboardingComplete } = await fyo.doc.getDoc("GetStarted");
+      const { hideGetStarted } = await fyo.doc.getDoc("SystemSettings");
 
-      let route = '/get-started';
+      let route = "/get-started";
       if (hideGetStarted || onboardingComplete) {
-        route = localStorage.getItem('lastRoute') || '/';
+        route = localStorage.getItem("lastRoute") || "/";
       }
 
       await routeTo(route);
     },
     async showDbSelector(): Promise<void> {
       localStorage.clear();
-      fyo.config.set('lastSelectedFilePath', null);
+      fyo.config.set("lastSelectedFilePath", null);
       fyo.telemetry.stop();
       await fyo.purgeCache();
       this.activeScreen = Screen.DatabaseSelector;
-      this.dbPath = '';
+      this.dbPath = "";
       this.searcher = null;
-      this.companyName = '';
+      this.companyName = "";
     },
   },
 });
 
-function getLanguageDirection(language: string): 'rtl' | 'ltr' {
-  return RTL_LANGUAGES.includes(language) ? 'rtl' : 'ltr';
+function getLanguageDirection(language: string): "rtl" | "ltr" {
+  return RTL_LANGUAGES.includes(language) ? "rtl" : "ltr";
 }
 </script>

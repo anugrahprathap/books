@@ -45,22 +45,22 @@
   </div>
 </template>
 <script lang="ts">
-import { t } from 'fyo';
-import { DocValue } from 'fyo/core/types';
-import { reports } from 'reports';
-import { Report } from 'reports/Report';
-import Button from 'src/components/Button.vue';
-import FormControl from 'src/components/Controls/FormControl.vue';
-import DropdownWithActions from 'src/components/DropdownWithActions.vue';
-import PageHeader from 'src/components/PageHeader.vue';
-import ListReport from 'src/components/Report/ListReport.vue';
-import { fyo } from 'src/initFyo';
-import { shortcutsKey } from 'src/utils/injectionKeys';
-import { docsPathMap, getReport } from 'src/utils/misc';
-import { docsPathRef } from 'src/utils/refs';
-import { ActionGroup } from 'src/utils/types';
-import { routeTo } from 'src/utils/ui';
-import { PropType, computed, defineComponent, inject } from 'vue';
+import { t } from "fyo";
+import { DocValue } from "fyo/core/types";
+import { reports } from "reports";
+import { Report } from "reports/Report";
+import Button from "src/components/Button.vue";
+import FormControl from "src/components/Controls/FormControl.vue";
+import DropdownWithActions from "src/components/DropdownWithActions.vue";
+import PageHeader from "src/components/PageHeader.vue";
+import ListReport from "src/components/Report/ListReport.vue";
+import { fyo } from "src/initFyo";
+import { shortcutsKey } from "src/utils/injectionKeys";
+import { docsPathMap, getReport } from "src/utils/misc";
+import { docsPathRef } from "src/utils/refs";
+import { ActionGroup } from "src/utils/types";
+import { routeTo } from "src/utils/ui";
+import { PropType, computed, defineComponent, inject } from "vue";
 
 export default defineComponent({
   components: {
@@ -82,7 +82,7 @@ export default defineComponent({
     },
     defaultFilters: {
       type: String,
-      default: '{}',
+      default: "{}",
     },
   },
   setup() {
@@ -102,13 +102,13 @@ export default defineComponent({
       const actions = this.report?.getActions() ?? [];
       const actionsMap = actions.reduce((acc, ac) => {
         if (!ac.group) {
-          ac.group = 'none';
+          ac.group = "none";
         }
 
         acc[ac.group] ??= {
           group: ac.group,
-          label: ac.label ?? '',
-          type: ac.type ?? 'secondary',
+          label: ac.label ?? "",
+          type: ac.type ?? "secondary",
           actions: [],
         };
 
@@ -121,8 +121,7 @@ export default defineComponent({
   },
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   async activated() {
-    docsPathRef.value =
-      docsPathMap[this.reportClassName] ?? docsPathMap.Reports!;
+    docsPathRef.value = docsPathMap[this.reportClassName] ?? docsPathMap.Reports!;
     await this.setReportData();
 
     const filters = JSON.parse(this.defaultFilters) as Record<string, DocValue>;
@@ -140,12 +139,12 @@ export default defineComponent({
       window.rep = this;
     }
 
-    this.shortcuts?.pmod.set(this.reportClassName, ['KeyP'], async () => {
+    this.shortcuts?.pmod.set(this.reportClassName, ["KeyP"], async () => {
       await routeTo(`/report-print/${this.reportClassName}`);
     });
   },
   deactivated() {
-    docsPathRef.value = '';
+    docsPathRef.value = "";
     this.shortcuts?.delete(this.reportClassName);
   },
   methods: {

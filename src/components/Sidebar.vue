@@ -9,19 +9,11 @@
       <!-- Company name and DB Switcher -->
       <div
         class="px-4 flex flex-row items-center justify-between mb-4"
-        :class="
-          platform === 'Mac' && languageDirection === 'ltr' ? 'mt-10' : 'mt-2'
-        "
+        :class="platform === 'Mac' && languageDirection === 'ltr' ? 'mt-10' : 'mt-2'"
       >
         <h6
           data-testid="company-name"
-          class="
-            font-semibold
-            whitespace-nowrap
-            overflow-auto
-            no-scrollbar
-            select-none
-          "
+          class="font-semibold whitespace-nowrap overflow-auto no-scrollbar select-none"
         >
           {{ companyName }}
         </h6>
@@ -53,21 +45,13 @@
             {{ group.label }}
           </div>
         </div>
-
+        
         <!-- Expanded Group -->
         <div v-if="group.items && isGroupActive(group)">
           <div
             v-for="item in group.items"
             :key="item.label"
-            class="
-              text-base
-              h-10
-              ps-10
-              cursor-pointer
-              flex
-              items-center
-              hover:bg-gray-100
-            "
+            class="text-base h-10 ps-10 cursor-pointer flex items-center hover:bg-gray-100"
             :class="
               isItemActive(item)
                 ? 'bg-gray-100 text-gray-900 border-s-4 border-gray-800'
@@ -86,13 +70,7 @@
     <!-- Report Issue and App Version -->
     <div class="window-no-drag flex flex-col gap-2 py-2 px-4">
       <button
-        class="
-          flex
-          text-sm text-gray-600
-          hover:text-gray-800
-          gap-1
-          items-center
-        "
+        class="flex text-sm text-gray-600 hover:text-gray-800 gap-1 items-center"
         @click="openDocumentation"
       >
         <feather-icon name="help-circle" class="h-4 w-4 flex-shrink-0" />
@@ -102,13 +80,7 @@
       </button>
 
       <button
-        class="
-          flex
-          text-sm text-gray-600
-          hover:text-gray-800
-          gap-1
-          items-center
-        "
+        class="flex text-sm text-gray-600 hover:text-gray-800 gap-1 items-center"
         @click="viewShortcuts = true"
       >
         <feather-icon name="command" class="h-4 w-4 flex-shrink-0" />
@@ -117,13 +89,7 @@
 
       <button
         data-testid="change-db"
-        class="
-          flex
-          text-sm text-gray-600
-          hover:text-gray-800
-          gap-1
-          items-center
-        "
+        class="flex text-sm text-gray-600 hover:text-gray-800 gap-1 items-center"
         @click="$emit('change-db-file')"
       >
         <feather-icon name="database" class="h-4 w-4 flex-shrink-0" />
@@ -131,13 +97,7 @@
       </button>
 
       <button
-        class="
-          flex
-          text-sm text-gray-600
-          hover:text-gray-800
-          gap-1
-          items-center
-        "
+        class="flex text-sm text-gray-600 hover:text-gray-800 gap-1 items-center"
         @click="() => reportIssue()"
       >
         <feather-icon name="flag" class="h-4 w-4 flex-shrink-0" />
@@ -158,19 +118,8 @@
 
     <!-- Hide Sidebar Button -->
     <button
-      class="
-        absolute
-        bottom-0
-        end-0
-        text-gray-600
-        hover:bg-gray-100
-        rounded
-        p-1
-        m-4
-        rtl-rotate-180
-      "
-      @click="() => toggleSidebar()"
-    >
+      class="absolute bottom-0 end-0 text-gray-600 hover:bg-gray-100 rounded p-1 m-4 rtl-rotate-180"
+      @click="() => toggleSidebar()">
       <feather-icon name="chevrons-left" class="w-4 h-4" />
     </button>
 
@@ -180,20 +129,20 @@
   </div>
 </template>
 <script lang="ts">
-import { reportIssue } from 'src/errorHandling';
-import { fyo } from 'src/initFyo';
-import { languageDirectionKey, shortcutsKey } from 'src/utils/injectionKeys';
-import { docsPathRef } from 'src/utils/refs';
-import { getSidebarConfig } from 'src/utils/sidebarConfig';
-import { SidebarConfig, SidebarItem, SidebarRoot } from 'src/utils/types';
-import { routeTo, toggleSidebar } from 'src/utils/ui';
-import { defineComponent, inject } from 'vue';
-import router from '../router';
-import Icon from './Icon.vue';
-import Modal from './Modal.vue';
-import ShortcutsHelper from './ShortcutsHelper.vue';
+import { reportIssue } from "src/errorHandling";
+import { fyo } from "src/initFyo";
+import { languageDirectionKey, shortcutsKey } from "src/utils/injectionKeys";
+import { docsPathRef } from "src/utils/refs";
+import { getSidebarConfig } from "src/utils/sidebarConfig";
+import { SidebarConfig, SidebarItem, SidebarRoot } from "src/utils/types";
+import { routeTo, toggleSidebar } from "src/utils/ui";
+import { defineComponent, inject } from "vue";
+import router from "../router";
+import Icon from "./Icon.vue";
+import Modal from "./Modal.vue";
+import ShortcutsHelper from "./ShortcutsHelper.vue";
 
-const COMPONENT_NAME = 'Sidebar';
+const COMPONENT_NAME = "Sidebar";
 
 export default defineComponent({
   components: {
@@ -201,7 +150,7 @@ export default defineComponent({
     Modal,
     ShortcutsHelper,
   },
-  emits: ['change-db-file'],
+  emits: ["change-db-file"],
   setup() {
     return {
       languageDirection: inject(languageDirectionKey),
@@ -210,7 +159,7 @@ export default defineComponent({
   },
   data() {
     return {
-      companyName: '',
+      companyName: "",
       groups: [],
       viewShortcuts: false,
       activeGroup: null,
@@ -229,7 +178,7 @@ export default defineComponent({
     },
   },
   async mounted() {
-    const { companyName } = await fyo.doc.getDoc('AccountingSettings');
+    const { companyName } = await fyo.doc.getDoc("AccountingSettings");
     this.companyName = companyName as string;
     this.groups = await getSidebarConfig();
 
@@ -238,12 +187,12 @@ export default defineComponent({
       this.setActiveGroup();
     });
 
-    this.shortcuts?.shift.set(COMPONENT_NAME, ['KeyH'], () => {
+    this.shortcuts?.shift.set(COMPONENT_NAME, ["KeyH"], () => {
       if (document.body === document.activeElement) {
         this.toggleSidebar();
       }
     });
-    this.shortcuts?.set(COMPONENT_NAME, ['F1'], () => this.openDocumentation());
+    this.shortcuts?.set(COMPONENT_NAME, ["F1"], () => this.openDocumentation());
 
     this.showDevMode = this.fyo.store.isDevelopment;
   },
@@ -255,14 +204,14 @@ export default defineComponent({
     reportIssue,
     toggleSidebar,
     openDocumentation() {
-      ipc.openLink('https://docs.frappebooks.com/' + docsPathRef.value);
+      ipc.openLink("https://docs.frappebooks.com/" + docsPathRef.value);
     },
     setActiveGroup() {
       const { fullPath } = this.$router.currentRoute.value;
       const fallBackGroup = this.activeGroup;
       this.activeGroup =
         this.groups.find((g) => {
-          if (fullPath.startsWith(g.route) && g.route !== '/') {
+          if (fullPath.startsWith(g.route) && g.route !== "/") {
             return true;
           }
 
@@ -287,8 +236,7 @@ export default defineComponent({
       const { path: currentRoute, params } = this.$route;
       const routeMatch = currentRoute === item.route;
 
-      const schemaNameMatch =
-        item.schemaName && params.schemaName === item.schemaName;
+      const schemaNameMatch = item.schemaName && params.schemaName === item.schemaName;
 
       const isMatch = routeMatch || schemaNameMatch;
       if (params.name && item.schemaName && !isMatch) {

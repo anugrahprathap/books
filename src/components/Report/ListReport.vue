@@ -1,5 +1,6 @@
 <template>
   <div class="overflow-hidden flex flex-col h-full">
+    
     <!-- Report Outer Container -->
     <div v-if="dataSlice.length" class="overflow-hidden">
       <!--Title Row -->

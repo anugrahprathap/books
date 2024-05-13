@@ -17,28 +17,28 @@
 </template>
 
 <script lang="ts">
-import { Doc } from 'fyo/model/doc';
-import { Action } from 'fyo/model/types';
-import Button from 'src/components/Button.vue';
-import Dropdown from 'src/components/Dropdown.vue';
-import { DropdownItem } from 'src/utils/types';
-import { defineComponent, PropType } from 'vue';
+import { Doc } from "fyo/model/doc";
+import { Action } from "fyo/model/types";
+import Button from "src/components/Button.vue";
+import Dropdown from "src/components/Dropdown.vue";
+import { DropdownItem } from "src/utils/types";
+import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
-  name: 'DropdownWithActions',
+  name: "DropdownWithActions",
   components: {
     Dropdown,
     Button,
   },
   inject: {
     injectedDoc: {
-      from: 'doc',
+      from: "doc",
       default: undefined,
     },
   },
   props: {
     actions: { type: Array as PropType<Action[]>, default: () => [] },
-    type: { type: String, default: 'secondary' },
+    type: { type: String, default: "secondary" },
     icon: { type: Boolean, default: true },
   },
   computed: {
