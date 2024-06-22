@@ -15,7 +15,7 @@ import Int from './Int.vue';
 import Link from './Link.vue';
 import Select from './Select.vue';
 import Text from './Text.vue';
-
+import Password from './Password.vue';
 const components = {
   AttachImage,
   Data,
@@ -32,6 +32,7 @@ const components = {
   Attachment,
   Currency,
   Text,
+  Password,
 };
 
 export default {

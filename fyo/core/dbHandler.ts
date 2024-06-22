@@ -28,6 +28,8 @@ import {
 } from './types';
 import { ReturnDocItem } from 'models/inventory/types';
 import { Money } from 'pesa';
+import { userLogin } from 'models/baseModels/Auth/auth';
+import { Doc } from 'fyo/model/doc';
 
 type FieldMap = Record<string, Record<string, Field>>;
 
@@ -379,5 +381,13 @@ export class DatabaseHandler extends DatabaseBase {
       acc[sch?.name] = getMapFromList(sch?.fields, 'fieldname');
       return acc;
     }, {} as FieldMap);
+  }
+  async login(schemaName:String,doc:DocValueMap){
+    return (await this.#demux.callBespoke(
+      'login',
+      schemaName,
+      doc.username,
+      doc.password
+    ))
   }
 }

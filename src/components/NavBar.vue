@@ -1,11 +1,11 @@
 <template>
   <nav class="bg-white-800">
-    <div class="container mx-auto px-2">
-      <div class="flex items-center justify-between py-4">
-        <ul class="flex flex-1 border-b">
+    <div class="container">
+      <div class="flex items-center  py-4">
+        <ul class="flex justify-evenly border-b">
           <div v-for="group in groups" :key="group.label">
             <Dropdown
-              class="-mb-px mr-2"
+              class="-mb-px mr-2 divide-x"
               v-if="group.items && group.items.length"
               :items="convertToDropdownItems(group.items)"
               :is-loading="isLoading"
@@ -13,7 +13,7 @@
               <template #default="{ toggleDropdown }">
                 <Button
                   @click="toggleDropdown()"
-                  class="flex items-center bg-white inline-block py-2 px-4 hover:text-blue-800"
+                  class="flex items-center bg-white  py-2 px-4 hover:text-blue-800"
                   :class="{
                     'border-l border-t border-r rounded-t text-blue-700 font-semibold': isGroupActive(
                       group
@@ -29,7 +29,7 @@
             <button
               v-else
               @click="routeToSidebarItem(group)"
-              class="-mb-px mr-2 bg-white inline-block py-2 px-4 hover:text-blue-800"
+              class="-mb-px mr-2 bg-white inline-block py-2 px-4 hover:text-blue-800 divide-x"
               :class="{
                 'border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold': isGroupActive(
                   group
@@ -51,7 +51,6 @@
 
 <script lang="ts">
 import { reportIssue } from "src/errorHandling";
-import { fyo } from "src/initFyo";
 import { languageDirectionKey, shortcutsKey } from "src/utils/injectionKeys";
 import { docsPathRef } from "src/utils/refs";
 import { getSidebarConfig } from "src/utils/sidebarConfig";

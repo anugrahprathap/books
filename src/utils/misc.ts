@@ -14,6 +14,11 @@ import { schemaTranslateables } from 'utils/translationHelpers';
 import type { LanguageMap } from 'utils/types';
 import { PeriodKey } from './types';
 
+
+import AuthSchema from 'schemas/app/Login.json';
+import { AuthSchemaSetup } from 'models/baseModels/Auth/auth';
+
+
 export function getDatesAndPeriodList(period: PeriodKey): {
   periodList: DateTime[];
   fromDate: DateTime;
@@ -193,3 +198,22 @@ export async function getReport(name: keyof typeof reports) {
   fyo.store.reports[name] = report;
   return report;
 }
+
+export function getSetupAuthDoc(languageMap?: LanguageMap) {
+  /**
+   * This is used cause when setup wizard is running
+   * the database isn't yet initialized.
+   */
+  const schema = cloneDeep(AuthSchema);
+  if (languageMap) {
+    translateSchema(schema, languageMap, schemaTranslateables);
+  }
+  return fyo.doc.getNewDoc(
+    'Login',
+    {},
+    false,
+    schema as Schema,
+    AuthSchemaSetup
+  );
+}
+

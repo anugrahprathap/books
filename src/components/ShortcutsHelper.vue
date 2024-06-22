@@ -120,7 +120,7 @@ export default defineComponent({
         shortcuts: [
           {
             shortcut: [ShortcutKey.pmod, 'N'],
-            description: t`Create a new entry of the same type as the List View`,
+            description: t`Create a  of the same type as the List View`,
           },
           {
             shortcut: [ShortcutKey.pmod, 'E'],

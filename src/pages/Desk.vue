@@ -3,16 +3,21 @@ import { showSidebar } from "src/utils/refs";
 import { toggleSidebar } from "src/utils/ui";
 </script>
 <template>
+  <NavBar/>
+    
+  
   <div class="flex overflow-hidden">
+    
     <Transition name="sidebar">
       <!-- eslint-disable vue/require-explicit-emits -->
+      
       <Sidebar
         v-show="showSidebar"
         class="flex-shrink-0 border-e whitespace-nowrap w-sidebar"
         @change-db-file="$emit('change-db-file')"
       />
     </Transition>
-
+    
     <div class="flex flex-1 overflow-y-hidden bg-white">
       <router-view v-slot="{ Component }">
         <keep-alive>
@@ -42,10 +47,12 @@ import { toggleSidebar } from "src/utils/ui";
 <script lang="ts">
 import { defineComponent } from "vue";
 import Sidebar from "../components/Sidebar.vue";
+import NavBar from "src/components/NavBar.vue";
 export default defineComponent({
   name: "Desk",
   components: {
     Sidebar,
+    NavBar,
   },
   emits: ["change-db-file"],
 });

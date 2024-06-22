@@ -11,6 +11,7 @@ export default class SystemSettings extends Doc {
   locale?: string;
   displayPrecision?: number;
   internalPrecision?: number;
+  enableLogin?: boolean;
   hideGetStarted?: boolean;
   countryCode?: string;
   currency?: string;

@@ -11,7 +11,7 @@
       :company-name="companyName"
     />
 
-    <NavBar @change-db-file="showDbSelector"></NavBar>
+    <!-- <NavBar @change-db-file="showDbSelector"></NavBar> -->
     <!-- Main Contents -->
     <Desk
       v-if="activeScreen === 'Desk'"
@@ -29,7 +29,14 @@
       @setup-complete="setupComplete"
       @setup-canceled="showDbSelector"
     />
-
+    <Modal :openModal="showRegModal" @closemodal="closeRegModal">
+      <Register @register-complete="handleLoginSuccess" @register-canceled="closeRegModal"/>
+    </Modal>
+    <!-- Login Modal -->
+    <Modal :openModal="showLoginModal" @closemodal="closeLoginModal">
+      <Login @login-success="handleLoginSuccess" @login-failed="closeLoginModal"/>
+    </Modal>
+    
     <!-- Render target for toasts -->
     <div
       id="toast-container"
@@ -42,7 +49,7 @@
 import { RTL_LANGUAGES } from "fyo/utils/consts";
 import { ModelNameEnum } from "models/types";
 import { systemLanguageRef } from "src/utils/refs";
-import { defineComponent, provide, ref, Ref } from "vue";
+import { defineComponent, provide, ref, Ref, getCurrentInstance } from "vue";
 import WindowsTitleBar from "./components/WindowsTitleBar.vue";
 import { handleErrorWithDialog } from "./errorHandling";
 import { fyo } from "./initFyo";
@@ -64,11 +71,15 @@ import { Shortcuts } from "./utils/shortcuts";
 import { routeTo } from "./utils/ui";
 import { useKeys } from "./utils/vueUtils";
 import NavBar from "./components/NavBar.vue";
+import Login from "./pages/Auth/Login.vue";
+import Register from "./pages/Auth/Register.vue";
+import Modal from "./components/Modal.vue";
 
 enum Screen {
   Desk = "Desk",
   DatabaseSelector = "DatabaseSelector",
   SetupWizard = "SetupWizard",
+  
 }
 
 export default defineComponent({
@@ -79,12 +90,18 @@ export default defineComponent({
     SetupWizard,
     DatabaseSelector,
     WindowsTitleBar,
+    Login,
+    Register,
+    Modal,
   },
   setup() {
     const keys = useKeys();
     const searcher: Ref<null | Search> = ref(null);
     const shortcuts = new Shortcuts(keys);
     const languageDirection = ref(getLanguageDirection(systemLanguageRef.value));
+    const showLoginModal = ref(false);
+    const showRegModal = ref(false);
+    const instance = getCurrentInstance();
 
     provide(injectionKeys.keysKey, keys);
     provide(injectionKeys.searcherKey, searcher);
@@ -93,12 +110,54 @@ export default defineComponent({
 
     const databaseSelector = ref<InstanceType<typeof DatabaseSelector> | null>(null);
 
+    const openLoginModal = () => {
+      showLoginModal.value = true;
+    };
+
+    const closeLoginModal = async () => {
+      showLoginModal.value = false;
+            fyo.config.set("lastSelectedFilePath", null); // Set lastSelectedFilePath to null
+
+      if (instance) {
+       await (instance.proxy as any).setInitialScreen();
+      }
+     
+    };
+    const openRegModal = () => {
+      showRegModal.value = true;
+    };
+
+    const closeRegModal = async () => {
+      showRegModal.value = false;
+      fyo.config.set("lastSelectedFilePath", null); // Set lastSelectedFilePath to null
+
+      if (instance) {
+      await (instance.proxy as any).setInitialScreen();
+      }
+    };
+
+    const handleLoginSuccess = async () => {
+      closeLoginModal();
+
+      if (instance) {
+        await (instance.proxy as any).initializeDesk((instance.proxy as any).dbPath);
+      }
+     
+    };
+
     return {
       keys,
       searcher,
       shortcuts,
       languageDirection,
       databaseSelector,
+      showLoginModal,
+      showRegModal,
+      openLoginModal,
+      openRegModal,
+      closeLoginModal,
+      closeRegModal,
+      handleLoginSuccess,
     };
   },
   data() {
@@ -141,12 +200,24 @@ export default defineComponent({
       await this.searcher.initializeKeywords();
     },
     async setDesk(filePath: string): Promise<void> {
+      const exists = await this.fyo.db.exists(ModelNameEnum.Login);
+      this.dbPath = filePath; // Set dbPath for future reference
+      if (exists) {
+        this.openLoginModal(); // Open the login modal if login details exist
+        return;
+      }
+      else{
+        this.openRegModal();
+      }
+      
+      // await this.initializeDesk(filePath);
+    },
+    async initializeDesk(filePath: string): Promise<void> {
       await setLanguageMap();
       this.activeScreen = Screen.Desk;
       await this.setDeskRoute();
       await fyo.telemetry.start(true);
       await ipc.checkForUpdates();
-      this.dbPath = filePath;
       this.companyName = (await fyo.getValue(
         ModelNameEnum.AccountingSettings,
         "companyName"
@@ -163,8 +234,7 @@ export default defineComponent({
         await showDialog({
           title: this.t`Cannot open file`,
           type: "error",
-          detail: this
-            .t`Frappe Books does not have access to the selected file: ${filePath}`,
+          detail: this.t`Frappe Books does not have access to the selected file: ${filePath}`,
         });
 
         fyo.config.set("lastSelectedFilePath", null);
@@ -184,21 +254,16 @@ export default defineComponent({
       await setupInstance(filePath, setupWizardOptions, fyo);
       fyo.config.set("lastSelectedFilePath", filePath);
       await this.setDesk(filePath);
+      
     },
     async showSetupWizardOrDesk(filePath: string): Promise<void> {
-      const { countryCode, error, actionSymbol } = await connectToDatabase(
-        this.fyo,
-        filePath
-      );
+      const { countryCode, error, actionSymbol } = await connectToDatabase(this.fyo, filePath);
 
       if (!countryCode && error && actionSymbol) {
         return await this.handleConnectionFailed(error, actionSymbol);
       }
 
-      const setupComplete = await fyo.getValue(
-        ModelNameEnum.AccountingSettings,
-        "setupComplete"
-      );
+      const setupComplete = await fyo.getValue(ModelNameEnum.AccountingSettings, "setupComplete");
 
       if (!setupComplete) {
         this.activeScreen = Screen.SetupWizard;
@@ -207,7 +272,7 @@ export default defineComponent({
 
       await initializeInstance(filePath, false, countryCode, fyo);
       await updatePrintTemplates(fyo);
-      await this.setDesk(filePath);
+      await this.setDesk(filePath); // Check for login and show desk accordingly
     },
     async handleConnectionFailed(error: Error, actionSymbol: symbol) {
       await this.showDbSelector();

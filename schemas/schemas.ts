@@ -63,12 +63,14 @@ import OpeningCash from './app/inventory/Point of Sale/OpeningCash.json';
 import POSSettings from './app/inventory/Point of Sale/POSSettings.json';
 import POSShift from './app/inventory/Point of Sale/POSShift.json';
 import POSShiftAmounts from './app/inventory/Point of Sale/POSShiftAmounts.json';
+import Login from './app/Login.json';
 import { Schema, SchemaStub } from './types';
 
 export const coreSchemas: Schema[] = [
   PatchRun as Schema,
   SingleValue as Schema,
   SystemSettings as Schema,
+  Login as Schema,
 ];
 
 export const metaSchemas: SchemaStub[] = [
@@ -152,4 +154,7 @@ export const appSchemas: Schema[] | SchemaStub[] = [
   POSSettings as Schema,
   POSShift as Schema,
   POSShiftAmounts as Schema,
+
+  
+  
 ];

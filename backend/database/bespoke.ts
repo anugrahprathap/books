@@ -447,4 +447,33 @@ export class BespokeQueries {
 
     return transactedAmounts;
   }
-}
+
+
+  //Login
+
+
+  static async login(
+    db: DatabaseCore,
+    schemaName: string,
+    username: string,
+    password: string
+  ): Promise<boolean> {
+    const user = await db.knex!(schemaName)
+    .select('password')
+    .where('username', username)
+    .first();
+
+  // If user is not found, return false
+  if (!user) {
+    return false;
+  }
+
+  // Compare the provided password with the hashed password stored in the database
+  const isPasswordValid = password === user.password;
+
+  // Return the result of the password comparison
+  return isPasswordValid;
+
+   
+  }
+} 

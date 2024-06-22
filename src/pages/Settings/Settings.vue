@@ -137,7 +137,7 @@ export default defineComponent({
         [ModelNameEnum.POSSettings]: this.t`POS Settings`,
         [ModelNameEnum.SystemSettings]: this.t`System`,
       };
-    },
+    },  
     schemas(): Schema[] {
       const enableInventory =
         !!this.fyo.singles.AccountingSettings?.enableInventory;

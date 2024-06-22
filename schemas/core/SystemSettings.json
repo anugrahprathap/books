@@ -57,6 +57,14 @@
       "section": "Default"
     },
     {
+      "fieldname": "enableLogin",
+      "label": "Enable Login",
+      "fieldtype": "Check",
+      "default": false,
+      "description": "Enable Login",
+      "section": "Default"
+    },
+    {
       "fieldname": "version",
       "label": "Version",
       "fieldtype": "Data",

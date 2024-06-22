@@ -1,0 +1,23 @@
+{
+    "name": "Register",
+    "label": "Register",
+    
+    "fields": [
+        {
+            "fieldname": "username",
+            "fieldtype": "Data",
+            "label": "Username"
+        },
+        {
+            "fieldname": "password",
+            "fieldtype": "Password",
+            "label": "Password"
+        },
+        {
+            "fieldname": "cpassword",
+            "fieldtype": "Password",
+            "label": "Confirm Password"
+        }
+    ],
+    "quickEditFields": ["username","password","cpassword"]
+}

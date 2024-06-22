@@ -201,4 +201,5 @@ export class DocHandler {
   #cacheHas(schemaName: string, name: string): boolean {
     return !!this.#getFromCache(schemaName, name);
   }
+  
 }

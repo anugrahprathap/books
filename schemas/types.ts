@@ -16,7 +16,8 @@ export type FieldType =
   | 'Currency'
   | 'Text'
   | 'Color'
-  | 'Attachment';
+  | 'Attachment'
+  | 'Password';
 
 export const FieldTypeEnum: PropertyEnum<Record<FieldType, FieldType>> = {
   Data: 'Data',
@@ -35,6 +36,7 @@ export const FieldTypeEnum: PropertyEnum<Record<FieldType, FieldType>> = {
   Text: 'Text',
   Color: 'Color',
   Attachment: 'Attachment',
+  Password: 'Password',
 };
 
 type OptionFieldType = 'Select' | 'AutoComplete' | 'Color';

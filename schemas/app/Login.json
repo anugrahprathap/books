@@ -1,0 +1,23 @@
+{
+    "name": "Login",
+    "label": "Login",
+    "naming": "manual",
+    
+    
+    "fields": [
+        {
+            "fieldname": "username",
+            "fieldtype": "Data",
+            "label": "Username",
+            "required": true
+        },
+        {
+            "fieldname": "password",
+            "fieldtype": "Password",
+            "label": "Password",
+            "required": true
+        }
+        
+    ],
+    "quickEditFields": ["username","password"]
+}
