@@ -45,6 +45,7 @@
     ></div>
   </div>
 </template>
+
 <script lang="ts">
 import { RTL_LANGUAGES } from "fyo/utils/consts";
 import { ModelNameEnum } from "models/types";
@@ -110,41 +111,6 @@ export default defineComponent({
 
     const databaseSelector = ref<InstanceType<typeof DatabaseSelector> | null>(null);
 
-    const openLoginModal = () => {
-      showLoginModal.value = true;
-    };
-
-    const closeLoginModal = async () => {
-      showLoginModal.value = false;
-            fyo.config.set("lastSelectedFilePath", null); // Set lastSelectedFilePath to null
-
-      if (instance) {
-       await (instance.proxy as any).setInitialScreen();
-      }
-     
-    };
-    const openRegModal = () => {
-      showRegModal.value = true;
-    };
-
-    const closeRegModal = async () => {
-      showRegModal.value = false;
-      fyo.config.set("lastSelectedFilePath", null); // Set lastSelectedFilePath to null
-
-      if (instance) {
-      await (instance.proxy as any).setInitialScreen();
-      }
-    };
-
-    const handleLoginSuccess = async () => {
-      closeLoginModal();
-
-      if (instance) {
-        await (instance.proxy as any).initializeDesk((instance.proxy as any).dbPath);
-      }
-     
-    };
-
     return {
       keys,
       searcher,
@@ -153,11 +119,6 @@ export default defineComponent({
       databaseSelector,
       showLoginModal,
       showRegModal,
-      openLoginModal,
-      openRegModal,
-      closeLoginModal,
-      closeRegModal,
-      handleLoginSuccess,
     };
   },
   data() {
@@ -185,6 +146,31 @@ export default defineComponent({
     await this.setInitialScreen();
   },
   methods: {
+    async openLoginModal() {
+      this.showLoginModal = true;
+    },
+    async closeLoginModal() {
+      this.showLoginModal = false;
+      fyo.config.set("lastSelectedFilePath", null);
+
+      this.showDbSelector();
+    },
+    openRegModal() {
+      this.showRegModal = true;
+    },
+    async closeRegModal() {
+      this.showRegModal = false;
+      fyo.config.set("lastSelectedFilePath", null);
+
+      this.setInitialScreen();
+      
+    },
+    async handleLoginSuccess() {
+      this.closeLoginModal();
+
+      this.initializeDesk(this.dbPath);
+      
+    },
     async setInitialScreen(): Promise<void> {
       const lastSelectedFilePath = fyo.config.get("lastSelectedFilePath", null);
 
@@ -203,14 +189,11 @@ export default defineComponent({
       const exists = await this.fyo.db.exists(ModelNameEnum.Login);
       this.dbPath = filePath; // Set dbPath for future reference
       if (exists) {
-        this.openLoginModal(); // Open the login modal if login details exist
+        await this.openLoginModal(); // Open the login modal if login details exist
         return;
-      }
-      else{
+      } else {
         this.openRegModal();
       }
-      
-      // await this.initializeDesk(filePath);
     },
     async initializeDesk(filePath: string): Promise<void> {
       await setLanguageMap();
@@ -254,7 +237,6 @@ export default defineComponent({
       await setupInstance(filePath, setupWizardOptions, fyo);
       fyo.config.set("lastSelectedFilePath", filePath);
       await this.setDesk(filePath);
-      
     },
     async showSetupWizardOrDesk(filePath: string): Promise<void> {
       const { countryCode, error, actionSymbol } = await connectToDatabase(this.fyo, filePath);
@@ -271,7 +253,12 @@ export default defineComponent({
       }
 
       await initializeInstance(filePath, false, countryCode, fyo);
-      await updatePrintTemplates(fyo);
+      try {
+        await updatePrintTemplates(fyo);
+      } catch (err) {
+        console.log(err);
+      }
+
       await this.setDesk(filePath); // Check for login and show desk accordingly
     },
     async handleConnectionFailed(error: Error, actionSymbol: symbol) {

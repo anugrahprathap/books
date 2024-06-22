@@ -3,7 +3,7 @@ import { showSidebar } from "src/utils/refs";
 import { toggleSidebar } from "src/utils/ui";
 </script>
 <template>
-  <NavBar/>
+  
     
   
   <div class="flex overflow-hidden">
@@ -47,12 +47,11 @@ import { toggleSidebar } from "src/utils/ui";
 <script lang="ts">
 import { defineComponent } from "vue";
 import Sidebar from "../components/Sidebar.vue";
-import NavBar from "src/components/NavBar.vue";
 export default defineComponent({
   name: "Desk",
   components: {
     Sidebar,
-    NavBar,
+    
   },
   emits: ["change-db-file"],
 });
