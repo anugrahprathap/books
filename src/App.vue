@@ -11,7 +11,6 @@
       :company-name="companyName"
     />
 
-    <!-- <NavBar @change-db-file="showDbSelector"></NavBar> -->
     <!-- Main Contents -->
     <Desk
       v-if="activeScreen === 'Desk'"
@@ -71,7 +70,6 @@ import { Search } from "./utils/search";
 import { Shortcuts } from "./utils/shortcuts";
 import { routeTo } from "./utils/ui";
 import { useKeys } from "./utils/vueUtils";
-import NavBar from "./components/NavBar.vue";
 import Login from "./pages/Auth/Login.vue";
 import Register from "./pages/Auth/Register.vue";
 import Modal from "./components/Modal.vue";
@@ -187,6 +185,7 @@ export default defineComponent({
     },
     async setDesk(filePath: string): Promise<void> {
       const exists = await this.fyo.db.exists(ModelNameEnum.Login);
+      console.log(exists);
       this.dbPath = filePath; // Set dbPath for future reference
       if (exists) {
         await this.openLoginModal(); // Open the login modal if login details exist
