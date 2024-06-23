@@ -129,10 +129,11 @@ export default defineComponent({
     },
     async showErrorDialog(title: string, detail: string) {
       return await showDialog({
-        title: this.t(title),
-        detail: this.t(detail),
+        title: this.t`${title}`,
+        detail: this.t`${detail}`,
         type: `error`,
       });
+      
     },
     async submit() {
       if (!this.hasDoc) {
