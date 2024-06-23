@@ -9,7 +9,7 @@ import type { ConfigFilesWithModified } from 'utils/types';
 
 export async function setAndGetCleanedConfigFiles() {
   const files = config.get('files', []);
-
+  console.log(files);
   const cleanedFileMap: Map<string, ConfigFile> = new Map();
   for (const file of files) {
     const exists = await fs

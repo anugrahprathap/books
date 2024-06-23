@@ -145,7 +145,8 @@ export default defineComponent({
       try {
         const data = await checkAndCreateDoc(ModelNameEnum.Login, this.doc.getValidDict(), this.fyo);
         if (data) {
-          this.$emit('register-complete', this.doc.getValidDict());
+          
+          this.$emit('register-complete', { doc: this.doc.getValidDict(), password: this.doc.password });
         } else {
           this.$emit('register-canceled');
           return await this.showErrorDialog('Invalid Input', 'Please check your input and try again.');

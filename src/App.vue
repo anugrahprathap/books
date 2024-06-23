@@ -99,7 +99,6 @@ export default defineComponent({
     const languageDirection = ref(getLanguageDirection(systemLanguageRef.value));
     const showLoginModal = ref(false);
     const showRegModal = ref(false);
-    const instance = getCurrentInstance();
 
     provide(injectionKeys.keysKey, keys);
     provide(injectionKeys.searcherKey, searcher);
@@ -123,10 +122,12 @@ export default defineComponent({
       activeScreen: null,
       dbPath: "",
       companyName: "",
+      password: "",
     } as {
       activeScreen: null | Screen;
       dbPath: string;
       companyName: string;
+      password: string;
     };
   },
   computed: {
@@ -211,7 +212,26 @@ export default defineComponent({
       const filePath = await ipc.getDbDefaultPath(companyName);
       await setupInstance(filePath, setupWizardOptions, fyo);
       fyo.config.set("lastSelectedFilePath", filePath);
-      await this.setDesk(filePath);
+      console.log("Encripting : ..");
+      await this.openRegModal();
+      if (this.password){
+        try {
+        const result = await ipc.encript(filePath,this.password)
+        if (result.success) {
+          console.log('File encrypted successfully:', result.encryptedFilePath);
+        } else {
+          console.error('File encryption failed:', result.error);
+        }
+      } catch (error) {
+        console.error('An error occurred during encryption:', error);
+      }
+      finally{
+        this.password=''
+      }
+      
+      }
+      
+      await this.initializeDesk(filePath);
       
     },
     async showSetupWizardOrDesk(filePath: string): Promise<void> {
@@ -226,8 +246,10 @@ export default defineComponent({
       if (!setupComplete) {
         this.activeScreen = Screen.SetupWizard;
         return;
+        
       }
-
+      
+      
       await initializeInstance(filePath, false, countryCode, fyo);
       await updatePrintTemplates(fyo);
       await this.setDesk(filePath); // Check for login and show desk accordingly
@@ -267,6 +289,8 @@ export default defineComponent({
       this.searcher = null;
       this.companyName = "";
     },
+
+    //Login Section
     openLoginModal() {
       this.showLoginModal = true;
     },
@@ -278,8 +302,9 @@ export default defineComponent({
       await this.showDbSelector();
     },
 
-    openRegModal() {
+    async openRegModal() {
       this.showRegModal = true;
+      await this.showDbSelector();
     },
 
     async closeRegModal() {
@@ -289,8 +314,10 @@ export default defineComponent({
       await this.setInitialScreen();
     },
 
-    async handleLoginSuccess() {
+    async handleLoginSuccess(payload: { doc: any; password: string }) {
       this.showLoginModal = false;
+      this.showRegModal = false;
+      this.password = payload.password;
       await this.initializeDesk(this.dbPath);
     },
   },

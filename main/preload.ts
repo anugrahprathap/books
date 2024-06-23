@@ -123,7 +123,16 @@ const ipc = {
       companyName
     )) as string;
   },
-
+ 
+    async encript(dbPath:string, password:string) {
+      return await ipcRenderer.invoke(
+        IPC_ACTIONS.CREATE_TAR_ENCRIPT  /* CREATE_ENCRIPT_TAR */,
+        dbPath,
+        password
+      );
+    },
+    
+  
   async getEnv() {
     return (await ipcRenderer.invoke(IPC_ACTIONS.GET_ENV)) as {
       isDevelopment: boolean;

@@ -26,6 +26,7 @@ import {
   setAndGetCleanedConfigFiles,
 } from './helpers';
 import { saveHtmlAsPdf } from './saveHtmlAsPdf';
+import {createAndEncryptTar} from '../utils/encript'
 
 export default function registerIpcMainActionListeners(main: Main) {
   ipcMain.handle(IPC_ACTIONS.CHECK_DB_ACCESS, async (_, filePath: string) => {
@@ -254,4 +255,19 @@ export default function registerIpcMainActionListeners(main: Main) {
       return databaseManager.getSchemaMap();
     });
   });
+
+  /* Encription Relatd operations */
+  // Handle IPC request to create and encrypt tar.gz file
+ipcMain.handle(IPC_ACTIONS.CREATE_TAR_ENCRIPT, async (event, filePath, password) => {
+  try {
+    const encryptedFilePath = await createAndEncryptTar(filePath, password);
+    return { success: true, encryptedFilePath };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, error: error.message };
+    } else {
+      return { success: false, error: 'An unknown error occurred' };
+    }
+  }
+});
 }
