@@ -32,8 +32,8 @@
       <Register @register-complete="handleLoginSuccess" @register-canceled="closeRegModal"/>
     </Modal>
     <!-- Login Modal -->
-    <Modal :openModal="showLoginModal" @closemodal="closeLoginModal">
-      <Login @login-success="handleLoginSuccess" @login-failed="closeLoginModal"/>
+    <Modal :openModal="showLoginModal" >
+      <Login @login-success="handleLoginSuccess" @login-failed="closeLoginModalErr"/>
     </Modal>
     
     <!-- Render target for toasts -->
@@ -108,41 +108,6 @@ export default defineComponent({
 
     const databaseSelector = ref<InstanceType<typeof DatabaseSelector> | null>(null);
 
-    const openLoginModal = () => {
-      showLoginModal.value = true;
-    };
-
-    const closeLoginModal = async () => {
-      showLoginModal.value = false;
-      fyo.config.set("lastSelectedFilePath", null); // Set lastSelectedFilePath to null
-
-      if (instance) {
-        await (instance.proxy as any).showDbSelector();
-      }
-     
-    };
-    const openRegModal = () => {
-      showRegModal.value = true;
-    };
-
-    const closeRegModal = async () => {
-      showRegModal.value = false;
-      fyo.config.set("lastSelectedFilePath", null); // Set lastSelectedFilePath to null
-
-      if (instance) {
-        await (instance.proxy as any).setInitialScreen();
-      }
-    };
-
-    const handleLoginSuccess = async () => {
-      closeLoginModal();
-
-      if (instance) {
-        await (instance.proxy as any).initializeDesk((instance.proxy as any).dbPath);
-      }
-     
-    };
-
     return {
       keys,
       searcher,
@@ -151,11 +116,6 @@ export default defineComponent({
       databaseSelector,
       showLoginModal,
       showRegModal,
-      openLoginModal,
-      openRegModal,
-      closeLoginModal,
-      closeRegModal,
-      handleLoginSuccess,
     };
   },
   data() {
@@ -306,6 +266,32 @@ export default defineComponent({
       this.dbPath = "";
       this.searcher = null;
       this.companyName = "";
+    },
+    openLoginModal() {
+      this.showLoginModal = true;
+    },
+
+    
+    async closeLoginModalErr() {
+      this.showLoginModal = false;
+      
+      await this.showDbSelector();
+    },
+
+    openRegModal() {
+      this.showRegModal = true;
+    },
+
+    async closeRegModal() {
+      this.showRegModal = false;
+      fyo.config.set("lastSelectedFilePath", null); // Set lastSelectedFilePath to null
+
+      await this.setInitialScreen();
+    },
+
+    async handleLoginSuccess() {
+      this.showLoginModal = false;
+      await this.initializeDesk(this.dbPath);
     },
   },
 });
