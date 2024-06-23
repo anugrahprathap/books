@@ -62,7 +62,7 @@ export default class DatabaseCore extends DatabaseBase {
       },
       useNullAsDefault: true,
       asyncStackTraces: process.env.NODE_ENV === 'development',
-      debug:true,
+      
     };
   }
 

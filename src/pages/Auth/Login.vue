@@ -40,7 +40,7 @@ import { Field } from 'schemas/types';
 import { Doc } from 'fyo/model/doc';
 import { getFieldsGroupedByTabAndSection } from 'src/utils/ui';
 import { getSetupAuthDoc } from 'src/utils/misc';
-import { TranslationString } from 'fyo/utils/translation';
+import { t, TranslationString } from 'fyo/utils/translation';
 import { DocValue } from 'fyo/core/types';
 import { getErrorMessage } from 'src/utils';
 import { showDialog } from 'src/utils/interactive';
@@ -82,7 +82,7 @@ export default defineComponent({
       if (this.docOrNull instanceof Doc) {
         return this.docOrNull;
       }
-      throw new Error(`Doc is null`);
+      throw new Error(t`Doc is null`);
     },
     areAllValuesFilled(): boolean {
       if (!this.hasDoc) {
@@ -131,7 +131,7 @@ export default defineComponent({
       return await showDialog({
         title: this.t(title),
         detail: this.t(detail),
-        type: 'error',
+        type: `error`,
       });
     },
     async submit() {
