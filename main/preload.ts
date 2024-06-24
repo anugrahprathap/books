@@ -131,6 +131,13 @@ const ipc = {
         password
       );
     },
+    async decript(dbPath:string, password:string) {
+      return await ipcRenderer.invoke(
+        IPC_ACTIONS.DECRIPT_FILE  /* CREATE_ENCRIPT_TAR */,
+        dbPath,
+        password
+      );
+    },
     
   
   async getEnv() {

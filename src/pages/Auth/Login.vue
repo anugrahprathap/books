@@ -144,9 +144,9 @@ export default defineComponent({
       }
       this.loading = true;
       try {
-        const data = await userLogin(ModelNameEnum.Login, this.doc.getValidDict(), this.fyo);
-        if (data) {
-          this.$emit('login-success', this.doc.getValidDict());
+        const [loginSuccess, decryptedFilePath] = await userLogin(this.doc.getValidDict(), this.fyo);
+        if (loginSuccess && decryptedFilePath) {
+          this.$emit('login-success', { doc: this.doc.getValidDict(),  filePath: decryptedFilePath });
         } else {
           this.$emit('login-failed');
           return await this.showErrorDialog(`Invalid Username or Password`, `Please check your credentials and try again.`);

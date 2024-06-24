@@ -393,7 +393,7 @@ export default defineComponent({
       if (!filePath) {
         return;
       }
-
+      
       this.$emit('file-selected', filePath);
     },
   },

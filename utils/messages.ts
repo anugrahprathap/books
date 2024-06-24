@@ -34,6 +34,7 @@ export enum IPC_ACTIONS {
   DB_SCHEMA = 'db-schema',
   // Encript Message
   CREATE_TAR_ENCRIPT ='create-encrypt-tar',
+  DECRIPT_FILE = ''
 }
 
 // ipcMain.send(...)

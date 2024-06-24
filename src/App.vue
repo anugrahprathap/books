@@ -29,7 +29,7 @@
       @setup-canceled="showDbSelector"
     />
     <Modal :openModal="showRegModal" @closemodal="closeRegModal">
-      <Register @register-complete="handleLoginSuccess" @register-canceled="closeRegModal"/>
+      <Register @register-complete="handleRegSuccess" @register-canceled="closeRegModal"/>
     </Modal>
     <!-- Login Modal -->
     <Modal :openModal="showLoginModal" >
@@ -161,15 +161,9 @@ export default defineComponent({
     async setDesk(filePath: string): Promise<void> {
       const exists = await this.fyo.db.exists(ModelNameEnum.Login);
       this.dbPath = filePath; // Set dbPath for future reference
-      if (exists) {
-        this.openLoginModal(); // Open the login modal if login details exist
-        return;
-      }
-      else{
-        this.openRegModal();
-      }
       
-      // await this.initializeDesk(filePath);
+      
+      await this.initializeDesk(filePath);
     },
     async initializeDesk(filePath: string): Promise<void> {
       await setLanguageMap();
@@ -195,8 +189,12 @@ export default defineComponent({
           type: "error",
           detail: this.t`Frappe Books does not have access to the selected file: ${filePath}`,
         });
-
         fyo.config.set("lastSelectedFilePath", null);
+        return;
+      }
+      if (filePath.endsWith('.enc')) {
+        this.dbPath = filePath;
+        this.openLoginModal();
         return;
       }
 
@@ -214,27 +212,10 @@ export default defineComponent({
       fyo.config.set("lastSelectedFilePath", filePath);
       console.log("Encripting : ..");
       await this.openRegModal();
-      if (this.password){
-        try {
-        const result = await ipc.encript(filePath,this.password)
-        if (result.success) {
-          console.log('File encrypted successfully:', result.encryptedFilePath);
-        } else {
-          console.error('File encryption failed:', result.error);
-        }
-      } catch (error) {
-        console.error('An error occurred during encryption:', error);
-      }
-      finally{
-        this.password=''
-      }
-      
-      }
-      
-      await this.initializeDesk(filePath);
       
     },
     async showSetupWizardOrDesk(filePath: string): Promise<void> {
+
       const { countryCode, error, actionSymbol } = await connectToDatabase(this.fyo, filePath);
 
       if (!countryCode && error && actionSymbol) {
@@ -304,7 +285,7 @@ export default defineComponent({
 
     async openRegModal() {
       this.showRegModal = true;
-      await this.showDbSelector();
+      
     },
 
     async closeRegModal() {
@@ -314,13 +295,39 @@ export default defineComponent({
       await this.setInitialScreen();
     },
 
-    async handleLoginSuccess(payload: { doc: any; password: string }) {
-      this.showLoginModal = false;
+    async handleRegSuccess(payload: { doc: any; password: string }) {
+  
       this.showRegModal = false;
       this.password = payload.password;
-      await this.initializeDesk(this.dbPath);
+      const filePath=fyo.config.config.get("lastSelectedFilePath") as string;;
+      if (this.password!=""){
+        try {
+        const result = await ipc.encript(filePath,this.password)
+        if (result.success) {
+          console.log('File encrypted successfully:', result.encryptedFilePath);
+        } else {
+          console.error('File encryption failed:', result.error);
+        }
+      } catch (error) {
+        console.error('An error occurred during encryption:', error);
+      }
+      finally{
+        this.password=''
+      }
+      
+      }
+      
+      await this.initializeDesk(filePath);
+      
     },
-  },
+     async handleLoginSuccess(payload: { doc: any; password: string; filePath: string }) {
+  this.showLoginModal = false;
+  this.showRegModal = false;
+  this.password = payload.password;
+  this.dbPath = payload.filePath;  // Use the decrypted file path
+  await this.initializeDesk(this.dbPath);
+}
+}
 });
 
 function getLanguageDirection(language: string): "rtl" | "ltr" {

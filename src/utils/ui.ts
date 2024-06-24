@@ -1009,7 +1009,7 @@ export async function getSelectedFilePath() {
   return ipc.getOpenFilePath({
     title: t`Select file`,
     properties: ['openFile'],
-    filters: [{ name: 'SQLite DB File', extensions: ['db'] }],
+    filters: [{ name: 'SQLite DB File', extensions: ['db','enc','gz'] }],
   });
 }
 

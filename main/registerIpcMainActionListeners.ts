@@ -26,7 +26,8 @@ import {
   setAndGetCleanedConfigFiles,
 } from './helpers';
 import { saveHtmlAsPdf } from './saveHtmlAsPdf';
-import {createAndEncryptTar} from '../utils/encript'
+import {createAndEncryptTar} from '../utils/encript';
+import { decryptAndExtractTar } from '../utils/decript';
 
 export default function registerIpcMainActionListeners(main: Main) {
   ipcMain.handle(IPC_ACTIONS.CHECK_DB_ACCESS, async (_, filePath: string) => {
@@ -256,13 +257,26 @@ export default function registerIpcMainActionListeners(main: Main) {
     });
   });
 
-  /* Encription Relatd operations */
-  // Handle IPC request to create and encrypt tar.gz file
+  /* Encription and Decription Relatd operations */
+ 
 ipcMain.handle(IPC_ACTIONS.CREATE_TAR_ENCRIPT, async (event, filePath, password) => {
   try {
     const encryptedFilePath = await createAndEncryptTar(filePath, password);
     return { success: true, encryptedFilePath };
   } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, error: error.message };
+    } else {
+      return { success: false, error: 'An unknown error occurred' };
+    }
+  }
+});
+ipcMain.handle(IPC_ACTIONS.DECRIPT_FILE, async (event, dbPath: string, password: string) => {
+  try {
+    const extractedFolderPath = await decryptAndExtractTar(dbPath, password);
+    return { success: true, extractedFolderPath };
+  } catch (error) {
+    console.error('Decryption failed:', error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     } else {
