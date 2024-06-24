@@ -5,20 +5,17 @@ const fs = require('fs');
 const path = require('path');
 
 export async function decryptAndExtractTar(encryptedFilePath: string, password: string) {
-  console.log("Decrypting file:", encryptedFilePath);
-
   // Ensure the correct path and filenames are set
   const tarFilePath = encryptedFilePath.replace('.enc', '');
-  const extractedFolderPath = tarFilePath.replace('.tar.gz', '');
-
-  console.log("Decrypted tar file will be:", tarFilePath);
-  console.log("Extracted folder path:", extractedFolderPath);
-
+  const fileName = path.basename(tarFilePath).replace(".tar.gz",'');
+  console.log("File >>>",fileName);
+  const baseFolderPath = path.dirname(tarFilePath);
+  const extractedFolderPath = path.join(baseFolderPath,"temp");
+  const extractedFilePath = path.join(extractedFolderPath,"dbs//Frappe Books",fileName);
   // Check if encrypted file exists
   if (!fs.existsSync(encryptedFilePath)) {
     throw new Error(`Encrypted file does not exist: ${encryptedFilePath}`);
   }
-
   // Decrypt the encrypted file
   let iv = crypto.createHash("sha1").update(password, "utf8").digest().slice(0, 16); // 16 bytes
   let decipher = crypto.createDecipheriv("aes-256-cbc", crypto.createHash("sha256").update(password, "utf8").digest(), iv);
@@ -30,15 +27,36 @@ export async function decryptAndExtractTar(encryptedFilePath: string, password: 
 
   await new Promise<void>((resolve, reject) => {
     output.on('finish', async () => {
-      console.log('<<< File ' + encryptedFilePath + ' decrypted as ' + tarFilePath);
-      fs.unlinkSync(encryptedFilePath);
-      if (!existsSync(extractedFolderPath)) {
-        mkdirSync(extractedFolderPath, { recursive: true });
+      try {
+        // Ensure all I/O operations are completed
+        output.close();
+
+        // Check if decrypted tar file exists
+        if (!fs.existsSync(tarFilePath)) {
+          throw new Error(`Decrypted tar file does not exist: ${tarFilePath}`);
+        }
+
+        // Create extracted folder if it doesn't exist
+        if (!existsSync(extractedFolderPath)) {
+          mkdirSync(extractedFolderPath, { recursive: true });
+        }
+        if (existsSync(extractedFilePath)) {
+          unlinkSync(extractedFilePath);
+        }
+
+
+        // Extract the tarball
+        await extract({ file: tarFilePath, cwd: extractedFolderPath });
+        console.log('Extraction complete:', extractedFilePath);
+
+        // Optionally, delete the decrypted tar file
+        unlinkSync(tarFilePath);
+
+        resolve();
+      } catch (err) {
+        console.error("File handling error:", err);
+        reject(err);
       }
-    
-      // Extract the tarball
-      await extract({ file: tarFilePath, cwd: extractedFolderPath });
-      resolve();
     });
 
     output.on('error', (err: Error) => {
@@ -46,12 +64,13 @@ export async function decryptAndExtractTar(encryptedFilePath: string, password: 
     });
   });
 
-  // Check if decrypted tar file exists
+  if (!fs.existsSync(extractedFilePath)) {
+    throw new Error(`Database file does not exist: ${extractedFilePath}`);
+  }
+
   
-  console.log('Extraction complete:', extractedFolderPath);
 
-  // Optionally, delete the decrypted tar file
-  unlinkSync(tarFilePath);
+  
 
-  return extractedFolderPath;
+  return extractedFilePath;
 }

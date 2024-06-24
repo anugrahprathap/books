@@ -23,9 +23,8 @@ export async function createAndEncryptTar(filePath: string, password: string) {
     input.pipe(cipher).pipe(output);
 
     output.on('finish', function () {
-        console.log('>>> File ' + filePath + ' encrypted as ' + filePath + '.enc');
         fs.unlinkSync(tarFilePath);
     });
-  console.log(encryptedFilePath);
+
   return encryptedFilePath;
 }

@@ -321,11 +321,13 @@ export default defineComponent({
       
     },
      async handleLoginSuccess(payload: { doc: any; password: string; filePath: string }) {
-  this.showLoginModal = false;
-  this.showRegModal = false;
-  this.password = payload.password;
-  this.dbPath = payload.filePath;  // Use the decrypted file path
-  await this.initializeDesk(this.dbPath);
+      this.showLoginModal = false;
+      try {
+        await this.showSetupWizardOrDesk(payload.filePath);
+      } catch (error) {
+        await handleErrorWithDialog(error, undefined, true, true);
+        await this.showDbSelector();
+      }
 }
 }
 });
