@@ -71,6 +71,15 @@
     <div class="window-no-drag flex flex-col gap-2 py-2 px-4">
       <button
         class="flex text-sm text-gray-600 hover:text-gray-800 gap-1 items-center"
+        @click=""
+      >
+        <feather-icon name="log-out" class="h-4 w-4 flex-shrink-0" />
+        <p>
+          {{ t`Logout` }}
+        </p>
+      </button>
+      <button
+        class="flex text-sm text-gray-600 hover:text-gray-800 gap-1 items-center"
         @click="openDocumentation"
       >
         <feather-icon name="help-circle" class="h-4 w-4 flex-shrink-0" />

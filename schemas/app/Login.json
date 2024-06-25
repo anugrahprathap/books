@@ -5,12 +5,7 @@
     
     
     "fields": [
-        {
-            "fieldname": "username",
-            "fieldtype": "Data",
-            "label": "Username",
-            "required": true
-        },
+        
         {
             "fieldname": "password",
             "fieldtype": "Password",
@@ -19,5 +14,5 @@
         }
         
     ],
-    "quickEditFields": ["username","password"]
+    "quickEditFields": ["password"]
 }

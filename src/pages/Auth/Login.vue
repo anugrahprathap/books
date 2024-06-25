@@ -1,11 +1,11 @@
 <template>
-  <div class="flex flex-col justify-center items-center">
+  <div class="flex  flex-col justify-center items-center ">
     <h2 class="mt-4 font-bold">Login</h2>
     <CommonFormSection
       v-for="([name, fields], idx) in activeGroup.entries()"
       :key="name + idx"
       ref="formSections"
-      class="p-4 w-full max-w-md"
+      class=" p-4  max-w-md"
       :class="idx !== 0 && activeGroup.size > 1 ? 'border-t' : ''"
       :show-title="activeGroup.size > 1 && name !== t('Default')"
       :title="name"
