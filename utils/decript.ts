@@ -8,7 +8,7 @@ export async function decryptAndExtractTar(encryptedFilePath: string, password: 
   // Ensure the correct path and filenames are set
   const tarFilePath = encryptedFilePath.replace('.enc', '');
   const fileName = path.basename(tarFilePath).replace(".tar.gz",'');
-  console.log("File >>>",fileName);
+  
   const baseFolderPath = path.dirname(tarFilePath);
   const extractedFolderPath = path.join(baseFolderPath,"temp");
   const extractedFilePath = path.join(extractedFolderPath,"dbs//Frappe Books",fileName);
@@ -41,7 +41,8 @@ export async function decryptAndExtractTar(encryptedFilePath: string, password: 
           mkdirSync(extractedFolderPath, { recursive: true });
         }
         if (existsSync(extractedFilePath)) {
-          unlinkSync(extractedFilePath);
+          resolve(); // Resolve the promise
+          return ;
         }
 
 
@@ -49,13 +50,15 @@ export async function decryptAndExtractTar(encryptedFilePath: string, password: 
         await extract({ file: tarFilePath, cwd: extractedFolderPath });
         console.log('Extraction complete:', extractedFilePath);
 
-        // Optionally, delete the decrypted tar file
-        unlinkSync(tarFilePath);
-
+        
         resolve();
       } catch (err) {
         console.error("File handling error:", err);
         reject(err);
+      }
+      finally{
+        // Optionally, delete the decrypted tar file
+        unlinkSync(tarFilePath);
       }
     });
 
@@ -67,10 +70,5 @@ export async function decryptAndExtractTar(encryptedFilePath: string, password: 
   if (!fs.existsSync(extractedFilePath)) {
     throw new Error(`Database file does not exist: ${extractedFilePath}`);
   }
-
-  
-
-  
-
   return extractedFilePath;
 }

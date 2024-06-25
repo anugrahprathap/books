@@ -159,7 +159,6 @@ export default defineComponent({
       await this.searcher.initializeKeywords();
     },
     async setDesk(filePath: string): Promise<void> {
-      const exists = await this.fyo.db.exists(ModelNameEnum.Login);
       this.dbPath = filePath; // Set dbPath for future reference
       
       
