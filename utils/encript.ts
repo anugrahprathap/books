@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 
 
-export async function createAndEncryptTar(filePath: string, password: string) {
+export async function createAndEncryptTar(filePath: string, password: string,isNew: boolean) {
   console.log("Password : ",password)
   const tarFilePath = `${filePath}.tar.gz`;
   const encryptedFilePath = `${tarFilePath}.enc`;
@@ -24,7 +24,13 @@ export async function createAndEncryptTar(filePath: string, password: string) {
 
     output.on('finish', function () {
         fs.unlinkSync(tarFilePath);
+        if(!isNew){
+          console.log("Deleted")
+          fs.unlinkSync(filePath);
+          return
+        }
+    
     });
-
+    
   return encryptedFilePath;
 }

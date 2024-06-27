@@ -301,7 +301,7 @@ export default defineComponent({
       const filePath=fyo.config.config.get("lastSelectedFilePath") as string;;
       if (this.password!=""){
         try {
-        const result = await ipc.encript(filePath,this.password)
+        const result = await ipc.encript(filePath,this.password,true)
         if (result.success) {
           console.log('File encrypted successfully:', result.encryptedFilePath);
         } else {

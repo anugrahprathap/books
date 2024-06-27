@@ -124,18 +124,19 @@ const ipc = {
     )) as string;
   },
  
-    async encript(dbPath:string, password:string) {
+    async encript(dbPath:string, password:string,isNew: boolean) {
       return await ipcRenderer.invoke(
         IPC_ACTIONS.CREATE_TAR_ENCRIPT  /* CREATE_ENCRIPT_TAR */,
         dbPath,
         password
       );
     },
-    async decript(dbPath:string, password:string) {
+    async decript(dbPath:string, password:string,isDevelopment: boolean) {
       return await ipcRenderer.invoke(
-        IPC_ACTIONS.DECRIPT_FILE  /* CREATE_ENCRIPT_TAR */,
+        IPC_ACTIONS.DECRIPT_FILE  /* Decript file */,
         dbPath,
-        password
+        password,
+        isDevelopment
       );
     },
     

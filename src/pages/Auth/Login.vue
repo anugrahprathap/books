@@ -152,6 +152,7 @@ export default defineComponent({
           return await this.showErrorDialog(`Invalid Username or Password`, `Please check your credentials and try again.`);
         }
       } catch (err) {
+        console.log(err);
         return await this.showErrorDialog(`Unexpected Error`, `An error occurred during login. Please try again later.`);
       } finally {
         this.loading = false;

@@ -259,9 +259,9 @@ export default function registerIpcMainActionListeners(main: Main) {
 
   /* Encription and Decription Relatd operations */
  
-ipcMain.handle(IPC_ACTIONS.CREATE_TAR_ENCRIPT, async (event, filePath, password) => {
+ipcMain.handle(IPC_ACTIONS.CREATE_TAR_ENCRIPT, async (event, filePath:string, password:string,isNew:boolean) => {
   try {
-    const encryptedFilePath = await createAndEncryptTar(filePath, password);
+    const encryptedFilePath = await createAndEncryptTar(filePath, password,isNew);
     return { success: true, encryptedFilePath };
   } catch (error) {
     if (error instanceof Error) {
@@ -271,9 +271,9 @@ ipcMain.handle(IPC_ACTIONS.CREATE_TAR_ENCRIPT, async (event, filePath, password)
     }
   }
 });
-ipcMain.handle(IPC_ACTIONS.DECRIPT_FILE, async (event, dbPath: string, password: string) => {
+ipcMain.handle(IPC_ACTIONS.DECRIPT_FILE, async (event, dbPath: string, password: string,isDevelopment: boolean) => {
   try {
-    const extractedFolderPath = await decryptAndExtractTar(dbPath, password);
+    const extractedFolderPath = await decryptAndExtractTar(dbPath, password,isDevelopment);
     return { success: true, extractedFolderPath };
   } catch (error) {
     console.error('Decryption failed:', error);
