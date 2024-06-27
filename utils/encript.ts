@@ -8,7 +8,9 @@ export async function createAndEncryptTar(filePath: string, password: string,isN
   console.log("Password : ",password)
   const tarFilePath = `${filePath}.tar.gz`;
   const encryptedFilePath = `${tarFilePath}.enc`;
-
+  if(encryptedFilePath){
+    fs.unlinkSync(encryptedFilePath);
+  }
   // Create tar.gz file
   await c({ gzip: true, file: tarFilePath }, [filePath]);
 
