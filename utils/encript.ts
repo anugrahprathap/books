@@ -25,11 +25,8 @@ export async function createAndEncryptTar(filePath: string, password: string,isN
     output.on('finish', function () {
         fs.unlinkSync(tarFilePath);
         if(!isNew){
-          console.log("Deleted")
           fs.unlinkSync(filePath);
-          return
         }
-    
     });
     
   return encryptedFilePath;

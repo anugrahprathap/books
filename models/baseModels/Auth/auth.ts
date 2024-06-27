@@ -30,15 +30,10 @@ export async function userLogin(
 ): Promise<[boolean, string | null]> {
   const filePath = fyo.config.config.get("lastSelectedFilePath") as string;
   const password = docObject.password as string;
-  const fileName = filePath.replace(/^.*[\\/]/, '').replace(".books.db.tar.gz.enc", '');
-  let outputFilePath=filePath.replace(".tar.gz.enc", '');
+  
   try {
     // Fetch the outputFilePath asynchronously
-    
-    
     // Attempt decryption
-    
-    
     const result = await ipc.decript(filePath, password, fyo.store.isDevelopment);
 
     if (result.success) {

@@ -9,7 +9,6 @@ export async function decryptAndExtractTar(encryptedFilePath: string, password: 
   const fileName = path.basename(tarFilePath).replace(".tar.gz",'');
   const baseFolderPath = path.dirname(encryptedFilePath);
   const extractedFilePath =path.join(baseFolderPath,fileName);
-  const extractedFolderPath =baseFolderPath;
   // Check if encrypted file exists
   if (!fs.existsSync(encryptedFilePath)) {
     throw new Error(`Encrypted file does not exist: ${encryptedFilePath}`);
@@ -30,12 +29,10 @@ export async function decryptAndExtractTar(encryptedFilePath: string, password: 
           throw new Error(`Decrypted tar file does not exist: ${tarFilePath}`);
         }
         // Create extracted folder if it doesn't exist
-        if (!existsSync(extractedFolderPath)) {
-          mkdirSync(extractedFolderPath, { recursive: true });
-        }
+       
         if (existsSync(extractedFilePath)) {
           resolve(); // Resolve the promise
-          return ;
+          return extractedFilePath;
         }
         // Extract the tarball
         await extract({ file: tarFilePath });
@@ -56,8 +53,6 @@ export async function decryptAndExtractTar(encryptedFilePath: string, password: 
     });
   });
 
-  // if (!fs.existsSync(extractedFilePath)) {
-  //   throw new Error(`Database file does not exist: ${extractedFilePath}`);
-  // }
+ 
   return extractedFilePath;
 }
