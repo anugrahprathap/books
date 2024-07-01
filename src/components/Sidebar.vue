@@ -1,77 +1,99 @@
-  <template>
-    <div
-      class="py-2 h-full flex justify-between flex-col bg-gray-25 relative"
-      :class="{
-        'window-drag': platform !== 'Windows',
-      }"
-    >
-      <div>
-        <!-- Company name and DB Switcher -->
-        <div
-          class="px-4 flex flex-row items-center justify-between mb-4"
-          :class="platform === 'Mac' && languageDirection === 'ltr' ? 'mt-10' : 'mt-2'"
+<template>
+  <div
+    class="py-2 h-full flex justify-between flex-col bg-gray-25 relative"
+    :class="{
+      'window-drag': platform !== 'Windows',
+    }"
+  >
+    <div>
+      <!-- Company name and DB Switcher -->
+      <div
+        class="px-4 flex flex-row items-center justify-between mb-4"
+        :class="
+          platform === 'Mac' && languageDirection === 'ltr' ? 'mt-10' : 'mt-2'
+        "
+      >
+        <h6
+          data-testid="company-name"
+          class="
+            font-semibold
+            whitespace-nowrap
+            overflow-auto
+            no-scrollbar
+            select-none
+          "
         >
-          <h6
-            data-testid="company-name"
-            class="font-semibold whitespace-nowrap overflow-auto no-scrollbar select-none"
+          {{ companyName }}
+        </h6>
+      </div>
+
+      <!-- Sidebar Items -->
+      <div v-for="group in groups" :key="group.label">
+        <div
+          class="px-4 flex items-center cursor-pointer hover:bg-gray-100 h-10"
+          :class="
+            isGroupActive(group) && !group.items
+              ? 'bg-gray-100 border-s-4 border-gray-800'
+              : ''
+          "
+          @click="routeToSidebarItem(group)"
+        >
+          <Icon
+            class="flex-shrink-0"
+            :name="group.icon"
+            :size="group.iconSize || '18'"
+            :height="group.iconHeight ?? 0"
+            :active="!!isGroupActive(group)"
+            :class="isGroupActive(group) && !group.items ? '-ms-1' : ''"
+          />
+          <div
+            class="ms-2 text-lg text-gray-700"
+            :class="isGroupActive(group) && !group.items && 'text-gray-900'"
           >
-            {{ companyName }}
-          </h6>
+            {{ group.label }}
+          </div>
         </div>
 
-        <!-- Sidebar Items -->
-        <div v-for="group in groups" :key="group.label">
+        <!-- Expanded Group -->
+        <div v-if="group.items && isGroupActive(group)">
           <div
-            class="px-4 flex items-center cursor-pointer hover:bg-gray-100 h-10"
-            :class="
-              isGroupActive(group) && !group.items
-                ? 'bg-gray-100 border-s-4 border-gray-800'
-                : ''
+            v-for="item in group.items"
+            :key="item.label"
+            class="
+              text-base
+              h-10
+              ps-10
+              cursor-pointer
+              flex
+              items-center
+              hover:bg-gray-100
             "
-            @click="routeToSidebarItem(group)"
+            :class="
+              isItemActive(item)
+                ? 'bg-gray-100 text-gray-900 border-s-4 border-gray-800'
+                : 'text-gray-700'
+            "
+            @click="routeToSidebarItem(item)"
           >
-            <Icon
-              class="flex-shrink-0"
-              :name="group.icon"
-              :size="group.iconSize || '18'"
-              :height="group.iconHeight ?? 0"
-              :active="!!isGroupActive(group)"
-              :class="isGroupActive(group) && !group.items ? '-ms-1' : ''"
-            />
-            <div
-              class="ms-2 text-lg text-gray-700"
-              :class="isGroupActive(group) && !group.items && 'text-gray-900'"
-            >
-              {{ group.label }}
-            </div>
-          </div>
-          
-          <!-- Expanded Group -->
-          <div v-if="group.items && isGroupActive(group)">
-            <div
-              v-for="item in group.items"
-              :key="item.label"
-              class="text-base h-10 ps-10 cursor-pointer flex items-center hover:bg-gray-100"
-              :class="
-                isItemActive(item)
-                  ? 'bg-gray-100 text-gray-900 border-s-4 border-gray-800'
-                  : 'text-gray-700'
-              "
-              @click="routeToSidebarItem(item)"
-            >
-              <p :style="isItemActive(item) ? 'margin-left: -4px' : ''">
-                {{ item.label }}
-              </p>
-            </div>
+            <p :style="isItemActive(item) ? 'margin-left: -4px' : ''">
+              {{ item.label }}
+            </p>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Report Issue and App Version -->
-      <div class="window-no-drag flex flex-col gap-2 py-2 px-4">
-        <div v-if=" isLoggedin">
+    <!-- Report Issue and App Version -->
+    <div class="window-no-drag flex flex-col gap-2 py-2 px-4">
+      <div v-if="isLoggedin">
         <button
-          class="flex text-sm text-gray-600 hover:text-gray-800 gap-1 items-center"
+          class="
+            flex
+            text-sm text-gray-600
+            hover:text-gray-800
+            gap-1
+            items-center
+          "
           @click="handleLogout"
         >
           <feather-icon name="log-out" class="h-4 w-4 flex-shrink-0" />
@@ -79,229 +101,283 @@
             {{ t`Logout` }}
           </p>
         </button>
-        </div>
-        <button
-          class="flex text-sm text-gray-600 hover:text-gray-800 gap-1 items-center"
-          @click="openDocumentation"
-        >
-          <feather-icon name="help-circle" class="h-4 w-4 flex-shrink-0" />
-          <p>
-            {{ t`Help` }}
-          </p>
-        </button>
-
-        <button
-          class="flex text-sm text-gray-600 hover:text-gray-800 gap-1 items-center"
-          @click="viewShortcuts = true"
-        >
-          <feather-icon name="command" class="h-4 w-4 flex-shrink-0" />
-          <p>{{ t`Shortcuts` }}</p>
-        </button>
-
-        <button
-          data-testid="change-db"
-          class="flex text-sm text-gray-600 hover:text-gray-800 gap-1 items-center"
-          @click="$emit('change-db-file')"
-        >
-          <feather-icon name="database" class="h-4 w-4 flex-shrink-0" />
-          <p>{{ t`Change DB` }}</p>
-        </button>
-
-        <button
-          class="flex text-sm text-gray-600 hover:text-gray-800 gap-1 items-center"
-          @click="() => reportIssue()"
-        >
-          <feather-icon name="flag" class="h-4 w-4 flex-shrink-0" />
-          <p>
-            {{ t`Report Issue` }}
-          </p>
-        </button>
-
-        <p
-          v-if="showDevMode"
-          class="text-xs text-gray-500 select-none cursor-pointer"
-          @click="showDevMode = false"
-          title="Open dev tools with Ctrl+Shift+I"
-        >
-          dev mode
-        </p>
       </div>
-
-      <!-- Hide Sidebar Button -->
       <button
-        class="absolute bottom-0 end-0 text-gray-600 hover:bg-gray-100 rounded p-1 m-4 rtl-rotate-180"
-        @click="() => toggleSidebar()">
-        <feather-icon name="chevrons-left" class="w-4 h-4" />
+        class="
+          flex
+          text-sm text-gray-600
+          hover:text-gray-800
+          gap-1
+          items-center
+        "
+        @click="openDocumentation"
+      >
+        <feather-icon name="help-circle" class="h-4 w-4 flex-shrink-0" />
+        <p>
+          {{ t`Help` }}
+        </p>
       </button>
 
-      <Modal :open-modal="viewShortcuts" @closemodal="viewShortcuts = false">
-        <ShortcutsHelper class="w-form" />
-      </Modal>
+      <button
+        class="
+          flex
+          text-sm text-gray-600
+          hover:text-gray-800
+          gap-1
+          items-center
+        "
+        @click="viewShortcuts = true"
+      >
+        <feather-icon name="command" class="h-4 w-4 flex-shrink-0" />
+        <p>{{ t`Shortcuts` }}</p>
+      </button>
+
+      <button
+        data-testid="change-db"
+        class="
+          flex
+          text-sm text-gray-600
+          hover:text-gray-800
+          gap-1
+          items-center
+        "
+        @click="$emit('change-db-file')"
+      >
+        <feather-icon name="database" class="h-4 w-4 flex-shrink-0" />
+        <p>{{ t`Change DB` }}</p>
+      </button>
+
+      <button
+        class="
+          flex
+          text-sm text-gray-600
+          hover:text-gray-800
+          gap-1
+          items-center
+        "
+        @click="() => reportIssue()"
+      >
+        <feather-icon name="flag" class="h-4 w-4 flex-shrink-0" />
+        <p>
+          {{ t`Report Issue` }}
+        </p>
+      </button>
+
+      <p
+        v-if="showDevMode"
+        class="text-xs text-gray-500 select-none cursor-pointer"
+        @click="showDevMode = false"
+        title="Open dev tools with Ctrl+Shift+I"
+      >
+        dev mode
+      </p>
     </div>
-  </template>
-  <script lang="ts">
-  import { reportIssue } from "src/errorHandling";
-  import { fyo } from "src/initFyo";
-  import { languageDirectionKey, shortcutsKey } from "src/utils/injectionKeys";
-  import { docsPathRef } from "src/utils/refs";
-  import { getSidebarConfig } from "src/utils/sidebarConfig";
-  import { SidebarConfig, SidebarItem, SidebarRoot } from "src/utils/types";
-  import { routeTo, toggleSidebar } from "src/utils/ui";
-  import { defineComponent, inject } from "vue";
-  import router from "../router";
-  import Icon from "./Icon.vue";
-  import Modal from "./Modal.vue";
-  import ShortcutsHelper from "./ShortcutsHelper.vue";
-  import { ModelNameEnum } from "models/types";
 
-  const COMPONENT_NAME = "Sidebar";
+    <!-- Hide Sidebar Button -->
+    <button
+      class="
+        absolute
+        bottom-0
+        end-0
+        text-gray-600
+        hover:bg-gray-100
+        rounded
+        p-1
+        m-4
+        rtl-rotate-180
+      "
+      @click="() => toggleSidebar()"
+    >
+      <feather-icon name="chevrons-left" class="w-4 h-4" />
+    </button>
 
-  export default defineComponent({
-    components: {
-      Icon,
-      Modal,
-      ShortcutsHelper,
-    },
-    emits: ["change-db-file"],
-    setup() {
-      return {
-        languageDirection: inject(languageDirectionKey),
-        shortcuts: inject(shortcutsKey),
-      };
-    },
-    data() {
-      return {
-        companyName: "",
-        groups: [],
-        viewShortcuts: false,
-        activeGroup: null,
-        showDevMode: false,
-        isLoggedin: false,
-      } as {
-        companyName: string;
-        groups: SidebarConfig;
-        viewShortcuts: boolean;
-        activeGroup: null | SidebarRoot;
-        showDevMode: boolean;
-        isLoggedin:boolean;
-      };
-    },
-    computed: {
-      appVersion() {
-        return fyo.store.appVersion;
-      },
-    },
-    async mounted() {
-      const { companyName } = await fyo.doc.getDoc("AccountingSettings");
-      this.companyName = companyName as string;
-      this.groups = await getSidebarConfig();
+    <Modal :open-modal="viewShortcuts" @closemodal="viewShortcuts = false">
+      <ShortcutsHelper class="w-form" />
+    </Modal>
+  </div>
+</template>
+<script lang="ts">
+import { reportIssue } from 'src/errorHandling';
+import { fyo } from 'src/initFyo';
+import { languageDirectionKey, shortcutsKey } from 'src/utils/injectionKeys';
+import { docsPathRef } from 'src/utils/refs';
+import { getSidebarConfig } from 'src/utils/sidebarConfig';
+import { SidebarConfig, SidebarItem, SidebarRoot } from 'src/utils/types';
+import { routeTo, toggleSidebar } from 'src/utils/ui';
+import { defineComponent, inject } from 'vue';
+import router from '../router';
+import Icon from './Icon.vue';
+import Modal from './Modal.vue';
+import ShortcutsHelper from './ShortcutsHelper.vue';
+import { ModelNameEnum } from 'models/types';
+import { showDialog } from 'src/utils/interactive';
 
+const COMPONENT_NAME = 'Sidebar';
+
+export default defineComponent({
+  components: {
+    Icon,
+    Modal,
+    ShortcutsHelper,
+  },
+  emits: ['change-db-file'],
+  setup() {
+    return {
+      languageDirection: inject(languageDirectionKey),
+      shortcuts: inject(shortcutsKey),
+    };
+  },
+  data() {
+    return {
+      companyName: '',
+      groups: [],
+      viewShortcuts: false,
+      activeGroup: null,
+      showDevMode: false,
+      isLoggedin: false,
+    } as {
+      companyName: string;
+      groups: SidebarConfig;
+      viewShortcuts: boolean;
+      activeGroup: null | SidebarRoot;
+      showDevMode: boolean;
+      isLoggedin: boolean;
+    };
+  },
+  computed: {
+    appVersion() {
+      return fyo.store.appVersion;
+    },
+  },
+  async mounted() {
+    const { companyName } = await fyo.doc.getDoc('AccountingSettings');
+    this.companyName = companyName as string;
+    this.groups = await getSidebarConfig();
+
+    this.setActiveGroup();
+    router.afterEach(() => {
       this.setActiveGroup();
-      router.afterEach(() => {
-        this.setActiveGroup();
-      });
+    });
 
-      this.shortcuts?.shift.set(COMPONENT_NAME, ["KeyH"], () => {
-        if (document.body === document.activeElement) {
-          this.toggleSidebar();
-        }
-      });
-      this.shortcuts?.set(COMPONENT_NAME, ["F1"], () => this.openDocumentation());
+    this.shortcuts?.shift.set(COMPONENT_NAME, ['KeyH'], () => {
+      if (document.body === document.activeElement) {
+        this.toggleSidebar();
+      }
+    });
+    this.shortcuts?.set(COMPONENT_NAME, ['F1'], () => this.openDocumentation());
 
-      this.showDevMode = this.fyo.store.isDevelopment;
-      this.checkIsLoggedin();
+    this.showDevMode = this.fyo.store.isDevelopment;
+    this.checkIsLoggedin();
+  },
+  unmounted() {
+    this.shortcuts?.delete(COMPONENT_NAME);
+  },
+  methods: {
+    routeTo,
+    reportIssue,
+    toggleSidebar,
+    openDocumentation() {
+      ipc.openLink('https://docs.frappebooks.com/' + docsPathRef.value);
     },
-    unmounted() {
-      this.shortcuts?.delete(COMPONENT_NAME);
-    },
-    methods: {
-      routeTo,
-      reportIssue,
-      toggleSidebar,
-      openDocumentation() {
-        ipc.openLink("https://docs.frappebooks.com/" + docsPathRef.value);
-      },
-      setActiveGroup() {
-        const { fullPath } = this.$router.currentRoute.value;
-        const fallBackGroup = this.activeGroup;
-        this.activeGroup =
-          this.groups.find((g) => {
-            if (fullPath.startsWith(g.route) && g.route !== "/") {
+    setActiveGroup() {
+      const { fullPath } = this.$router.currentRoute.value;
+      const fallBackGroup = this.activeGroup;
+      this.activeGroup =
+        this.groups.find((g) => {
+          if (fullPath.startsWith(g.route) && g.route !== '/') {
+            return true;
+          }
+
+          if (g.route === fullPath) {
+            return true;
+          }
+
+          if (g.items) {
+            let activeItem = g.items.filter(
+              ({ route }) => route === fullPath || fullPath.startsWith(route)
+            );
+
+            if (activeItem.length) {
               return true;
             }
+          }
+        }) ??
+        fallBackGroup ??
+        this.groups[0];
+    },
+    isItemActive(item: SidebarItem) {
+      const { path: currentRoute, params } = this.$route;
+      const routeMatch = currentRoute === item.route;
 
-            if (g.route === fullPath) {
-              return true;
-            }
+      const schemaNameMatch =
+        item.schemaName && params.schemaName === item.schemaName;
 
-            if (g.items) {
-              let activeItem = g.items.filter(
-                ({ route }) => route === fullPath || fullPath.startsWith(route)
-              );
+      const isMatch = routeMatch || schemaNameMatch;
+      if (params.name && item.schemaName && !isMatch) {
+        return currentRoute.includes(`${item.schemaName}/${params.name}`);
+      }
 
-              if (activeItem.length) {
-                return true;
-              }
-            }
-          }) ??
-          fallBackGroup ??
-          this.groups[0];
-      },
-      isItemActive(item: SidebarItem) {
-        const { path: currentRoute, params } = this.$route;
-        const routeMatch = currentRoute === item.route;
+      return isMatch;
+    },
+    isGroupActive(group: SidebarRoot) {
+      return this.activeGroup && group.label === this.activeGroup.label;
+    },
+    routeToSidebarItem(item: SidebarItem | SidebarRoot) {
+      routeTo(this.getPath(item));
+    },
+    getPath(item: SidebarItem | SidebarRoot) {
+      const { route: path, filters } = item;
+      if (!filters) {
+        return path;
+      }
 
-        const schemaNameMatch = item.schemaName && params.schemaName === item.schemaName;
+      return { path, query: { filters: JSON.stringify(filters) } };
+    },
 
-        const isMatch = routeMatch || schemaNameMatch;
-        if (params.name && item.schemaName && !isMatch) {
-          return currentRoute.includes(`${item.schemaName}/${params.name}`);
-        }
+    //Check if the user is loged in
 
-        return isMatch;
-      },
-      isGroupActive(group: SidebarRoot) {
-        return this.activeGroup && group.label === this.activeGroup.label;
-      },
-      routeToSidebarItem(item: SidebarItem | SidebarRoot) {
-        routeTo(this.getPath(item));
-      },
-      getPath(item: SidebarItem | SidebarRoot) {
-        const { route: path, filters } = item;
-        if (!filters) {
-          return path;
-        }
-
-        return { path, query: { filters: JSON.stringify(filters) } };
-      },
-
-
-
-      //Check if the user is loged in
-
-      async checkIsLoggedin() {
+    async checkIsLoggedin() {
       try {
         const exists = await this.fyo.db.exists(ModelNameEnum.Login);
         this.isLoggedin = exists;
-      }
-      catch(error){
-        console.error("Error checking login status:", error);
+      } catch (error) {
+        console.error('Error checking login status:', error);
         this.isLoggedin = false; // Handle error state as needed
       }
     },
-    async handleLogout(){
-      
-      const filePath = fyo.config.get("lastSelectedFilePath") as string;
-      let res = await this.fyo.db.getAllRaw(ModelNameEnum.Login,{fields:['password']})
-      const password = res[0].password as string;
-      localStorage.clear();
-      fyo.config.set("lastSelectedFilePath", null);
-      fyo.telemetry.stop();
-      await fyo.purgeCache();
-      await ipc.encript(filePath,password as string,false)
+    async handleLogout() {
+      await showDialog({
+        title: this.t`Confirm Logout`,
+        detail: this
+          .t` Are you sure you want to log out?`,
+        type: 'info',
+        buttons: [
+          {
+            label: this.t`Yes`,
+            isPrimary: true,
+            action: async () => {
+              const filePath = fyo.config.get('lastSelectedFilePath') as string;
+              let res = await this.fyo.db.getAllRaw(ModelNameEnum.Login, {
+                fields: ['password'],
+              });
+              const password = res[0].password as string;
+              localStorage.clear();
+              fyo.config.set('lastSelectedFilePath', null);
+              fyo.telemetry.stop();
+              await fyo.purgeCache();
 
-      this.$emit('change-db-file') 
-    }
+              await ipc.encript(filePath, password as string, false);
+              this.$emit('change-db-file');
+            },
+          },
+          {
+            label: this.t`No`,
+            action: () => null,
+            isEscape: true,
+          },
+        ],
+      });
     },
-  });
-  </script>
+  },
+});
+</script>

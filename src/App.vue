@@ -211,7 +211,6 @@ export default defineComponent({
       await setupInstance(filePath, setupWizardOptions, fyo);
       fyo.config.set("lastSelectedFilePath", filePath);
       await this.openRegModal();
-      
     },
     async showSetupWizardOrDesk(filePath: string): Promise<void> {
 
