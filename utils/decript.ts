@@ -1,8 +1,8 @@
 import { unlinkSync, existsSync, mkdirSync } from 'fs';
 import { extract } from 'tar';
-const crypto = require('crypto');
-const fs = require('fs');
-const path = require('path');
+import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 
 export async function decryptAndExtractTar(encryptedFilePath: string, password: string,isDevelopment: boolean) {
   const tarFilePath = encryptedFilePath.replace('.enc', '');

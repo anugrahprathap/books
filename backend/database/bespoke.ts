@@ -15,7 +15,7 @@ import { Money } from 'pesa';
 
 export class BespokeQueries {
   [key: string]: BespokeFunction;
-
+      
   static async getLastInserted(
     db: DatabaseCore,
     schemaName: string

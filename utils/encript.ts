@@ -1,35 +1,47 @@
-
 import { c } from 'tar';
-const crypto = require('crypto');
-const fs = require('fs');
+import crypto from 'crypto';
+import fs from 'fs/promises'; // Use promises version of fs
+import { createReadStream, createWriteStream, unlinkSync, existsSync } from 'fs';
 
-
-export async function createAndEncryptTar(filePath: string, password: string,isNew: boolean) {
-  console.log("Password : ",password)
+export async function createAndEncryptTar(filePath: string, password: string, isNew: boolean) {
   const tarFilePath = `${filePath}.tar.gz`;
   const encryptedFilePath = `${tarFilePath}.enc`;
-  if(encryptedFilePath){
-    fs.unlinkSync(encryptedFilePath);
+
+  // Remove the encrypted file if it already exists
+  if (existsSync(encryptedFilePath)) {
+    await fs.unlink(encryptedFilePath);
   }
+
   // Create tar.gz file
   await c({ gzip: true, file: tarFilePath }, [filePath]);
 
   // Encrypt the tar.gz file using Node.js crypto module
-    let iv = crypto.createHash("sha1").update(password, "utf8").digest().subarray(0, 16); // 16 bytes
+  const iv = crypto.createHash("sha1").update(password, "utf8").digest().subarray(0, 16); // 16 bytes
+  const cipher = crypto.createCipheriv("aes-256-cbc", crypto.createHash("sha256").update(password, "utf8").digest(), iv);
 
-    let cipher = crypto.createCipheriv("aes-256-cbc", crypto.createHash("sha256").update(password, "utf8").digest(), iv);
+  const input = createReadStream(tarFilePath);
+  const output = createWriteStream(encryptedFilePath);
 
-    let input = fs.createReadStream(tarFilePath);
-    let output = fs.createWriteStream(tarFilePath + '.enc');
+  input.pipe(cipher).pipe(output);
 
-    input.pipe(cipher).pipe(output);
-
-    output.on('finish', function () {
-        fs.unlinkSync(tarFilePath);
-        if(!isNew){
-          fs.unlinkSync(filePath);
+  return new Promise((resolve, reject) => {
+    output.on('finish', async () => {
+      try {
+        await fs.unlink(tarFilePath);
+        
+        if (!isNew) {
+          
+             unlinkSync(filePath);
+           
         }
+        resolve(encryptedFilePath);
+      } catch (err) {
+        reject(err);
+      }
     });
-    
-  return encryptedFilePath;
+
+    output.on('error', reject);
+    input.on('error', reject);
+  });
 }
+

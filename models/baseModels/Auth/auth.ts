@@ -39,7 +39,6 @@ export async function userLogin(
     if (result.success) {
       // Successful decryption
       const decryptedFilePath = result.extractedFolderPath;
-      fyo.config.set("lastSelectedFilePath", decryptedFilePath);
       return [true, decryptedFilePath];
     } else {
       // Failed decryption

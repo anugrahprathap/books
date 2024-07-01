@@ -194,22 +194,22 @@ export default defineComponent({
       if (filePath.endsWith('.enc')) {
         this.dbPath = filePath;
         this.openLoginModal();
-        return;
       }
-
-      try {
+      else{
+        try {
         await this.showSetupWizardOrDesk(filePath);
       } catch (error) {
         await handleErrorWithDialog(error, undefined, true, true);
         await this.showDbSelector();
       }
+      }
+      
     },
     async setupComplete(setupWizardOptions: SetupWizardOptions): Promise<void> {
       const companyName = setupWizardOptions.companyName;
       const filePath = await ipc.getDbDefaultPath(companyName);
       await setupInstance(filePath, setupWizardOptions, fyo);
       fyo.config.set("lastSelectedFilePath", filePath);
-      console.log("Encripting : ..");
       await this.openRegModal();
       
     },
@@ -319,14 +319,26 @@ export default defineComponent({
       await this.initializeDesk(filePath);
       
     },
-     async handleLoginSuccess(payload: { doc: any; password: string; filePath: string }) {
-      this.showLoginModal = false;
-      try {
-        await this.showSetupWizardOrDesk(payload.filePath);
-      } catch (error) {
-        await handleErrorWithDialog(error, undefined, true, true);
-        await this.showDbSelector();
-      }
+    async runAfterLogin(filePath: string): Promise<void> {
+  try {
+    await this.showSetupWizardOrDesk(filePath);
+  } catch (error) {
+    await handleErrorWithDialog(error, undefined, true, true);
+    await this.showDbSelector();
+  }
+},
+
+async handleLoginSuccess(payload: { doc: any; password: string; filePath: string }) {
+  this.showLoginModal = false;
+  try {
+    this.dbPath = payload.filePath;
+    fyo.config.set("lastSelectedFilePath", payload.filePath);
+
+    await this.runAfterLogin(payload.filePath);
+  } catch (error) {
+    await handleErrorWithDialog(error, undefined, true, true);
+    await this.showDbSelector();
+  }
 }
 }
 });

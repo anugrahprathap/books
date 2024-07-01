@@ -261,6 +261,7 @@ export default function registerIpcMainActionListeners(main: Main) {
  
 ipcMain.handle(IPC_ACTIONS.CREATE_TAR_ENCRIPT, async (event, filePath:string, password:string,isNew:boolean) => {
   try {
+    console.log(isNew,"Main")
     const encryptedFilePath = await createAndEncryptTar(filePath, password,isNew);
     return { success: true, encryptedFilePath };
   } catch (error) {

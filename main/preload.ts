@@ -128,7 +128,8 @@ const ipc = {
       return await ipcRenderer.invoke(
         IPC_ACTIONS.CREATE_TAR_ENCRIPT  /* CREATE_ENCRIPT_TAR */,
         dbPath,
-        password
+        password,
+        isNew
       );
     },
     async decript(dbPath:string, password:string,isDevelopment: boolean) {
