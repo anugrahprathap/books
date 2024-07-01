@@ -294,7 +294,12 @@
       const filePath = fyo.config.get("lastSelectedFilePath") as string;
       let res = await this.fyo.db.getAllRaw(ModelNameEnum.Login,{fields:['password']})
       const password = res[0].password as string;
-      await ipc.encript(fyo.config.get("lastSelectedFilePath") as string,res[0].password as string,false)
+      localStorage.clear();
+      fyo.config.set("lastSelectedFilePath", null);
+      fyo.telemetry.stop();
+      await fyo.purgeCache();
+      await ipc.encript(filePath,password as string,false)
+
       this.$emit('change-db-file') 
     }
     },

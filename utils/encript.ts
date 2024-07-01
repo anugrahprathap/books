@@ -4,6 +4,7 @@ import fs from 'fs/promises'; // Use promises version of fs
 import { createReadStream, createWriteStream, unlinkSync, existsSync } from 'fs';
 
 export async function createAndEncryptTar(filePath: string, password: string, isNew: boolean) {
+
   const tarFilePath = `${filePath}.tar.gz`;
   const encryptedFilePath = `${tarFilePath}.enc`;
 
@@ -28,11 +29,8 @@ export async function createAndEncryptTar(filePath: string, password: string, is
     output.on('finish', async () => {
       try {
         await fs.unlink(tarFilePath);
-        
         if (!isNew) {
-          
-             unlinkSync(filePath);
-           
+          await fs.unlink(filePath);
         }
         resolve(encryptedFilePath);
       } catch (err) {
@@ -44,4 +42,3 @@ export async function createAndEncryptTar(filePath: string, password: string, is
     input.on('error', reject);
   });
 }
-
